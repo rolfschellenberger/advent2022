@@ -206,6 +206,20 @@ class MatrixTest {
     }
 
     @Test
+    fun testGetArea() {
+        val from = Point(4, 6)
+        val to = Point(8, 9)
+        matrix.set(from, "A")
+        matrix.set(to, "B")
+
+        val area = matrix.getArea(from, to)
+        assertEquals(20, area.size)
+        assertEquals(1, area.filter { matrix.get(it) == "A" }.count())
+        assertEquals(1, area.filter { matrix.get(it) == "B" }.count())
+        assertEquals(18, area.filter { matrix.get(it) == "." }.count())
+    }
+
+    @Test
     fun testCutOut() {
         matrix.set(3, 4, "B")
         matrix.set(5, 5, "C")

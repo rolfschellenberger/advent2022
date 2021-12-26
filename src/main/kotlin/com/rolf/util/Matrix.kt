@@ -139,9 +139,11 @@ open class Matrix<T>(internal val input: MutableList<MutableList<T>>) {
         horizontal: Boolean = true,
         vertical: Boolean = true,
         diagonal: Boolean = true,
+        includeOwn: Boolean = false,
         wrap: Boolean = false
     ): Set<Point> {
         val result = mutableSetOf<Point>()
+        if (includeOwn) result.add(point)
         if (horizontal) {
             getLeft(point, wrap)?.let { result.add(it) }
             getRight(point, wrap)?.let { result.add(it) }
@@ -157,6 +159,16 @@ open class Matrix<T>(internal val input: MutableList<MutableList<T>>) {
             getRightDown(point, wrap)?.let { result.add(it) }
         }
         return result
+    }
+
+    fun getArea(topLeftInclusive: Point, bottomRightInclusive: Point): List<Point> {
+        val points = mutableListOf<Point>()
+        for (y in topLeftInclusive.y..bottomRightInclusive.y) {
+            for (x in topLeftInclusive.x..bottomRightInclusive.x) {
+                points.add(Point(x, y))
+            }
+        }
+        return points
     }
 
     fun getOppositePointOverX(x: Int, y: Int, centerX: Int): Point {
