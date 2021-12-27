@@ -200,5 +200,9 @@ class GraphTest {
         val (path4, weight4) = graph.lowestPathAndWeightVisitAll()
         assertEquals(listOf("d", "b", "a", "c", "e"), path4)
         assertEquals(5.0, weight4, 0.0)
+
+        val (path5, weight5) = graph.highestPathAndWeightVisitAll()
+        assertEquals(listOf("a", "c", "e", "d", "b"), path5)
+        assertEquals(7.0, weight5, 0.0)
     }
 }

@@ -208,6 +208,72 @@ open class Graph<T> {
 
         return path to minCost
     }
+
+    fun highestPathAndWeightVisitAll(source: String? = null, destination: String? = null): Pair<List<String>, Double> {
+        // Use a modified version of Dijkstra's algorithm: https://www.baeldung.com/cs/shortest-path-visiting-all-nodes
+        // Initially, we declare an array called cost, which stores the shortest path to some node visiting a
+        // subset of nodes.
+        val costs = mutableMapOf<Cost, Double>()
+        val paths = mutableMapOf<Cost, MutableList<String>>()
+
+        // We also declare a priority queue that stores a node and a bitmask. The bitmask represents all visited
+        // nodes to get to this node. This priority queue will sort states in acceding order according to the cost
+        // of the state.
+        val queue = PriorityQueue<Cost>()
+
+        // Next, we try to start the shortest path from each node by adding each node to the priority queue and
+        // turning their bit on. Then, we run the Dijkstra algorithm.
+        for (vertex in vertices()) {
+            val cost = Cost(vertex.id, setOf(vertex.id), 0.0)
+            costs[cost] = 0.0
+            paths[cost] = mutableListOf(vertex.id)
+            queue.add(cost)
+        }
+
+        while (queue.isNotEmpty()) {
+            val current = queue.poll()
+            val currentId = current.id
+            val visitedVertices = current.visited
+            for (edge in edges(currentId)) {
+                val neighbourId = edge.destination
+                if (!visitedVertices.contains(neighbourId)) {
+                    val neighbour = getVertex(neighbourId)!!
+                    val distanceValue = edge.weight + neighbour.weight
+
+                    val newVisitedVertices = visitedVertices + neighbourId
+                    val newCost = costs[Cost(currentId, visitedVertices)]!! + distanceValue
+                    val neighbourCost = Cost(neighbourId, newVisitedVertices, newCost)
+                    val currentCost = costs.getOrDefault(neighbourCost, 0.0)
+                    if (newCost > currentCost) {
+                        val path = paths.getOrDefault(Cost(currentId, visitedVertices), mutableListOf())
+                        costs[neighbourCost] = newCost
+                        paths[neighbourCost] = (path + listOf(neighbourId)).toMutableList()
+                        queue.add(neighbourCost)
+                    }
+                }
+            }
+        }
+
+        val vertices = vertices()
+        val visitedAll = vertices.map { it.id }.toSet()
+        var maxCost = 0.0
+        var path = mutableListOf<String>()
+        for (vertex in vertices) {
+            if (destination == null || destination == vertex.id) {
+                val costObj = Cost(vertex.id, visitedAll)
+                val cost = costs.getOrDefault(costObj, 0.0)
+                val pathFound = paths.getOrDefault(costObj, mutableListOf())
+                if (source == null || source == pathFound.first()) {
+                    if (cost > maxCost) {
+                        maxCost = cost
+                        path = paths.getOrDefault(costObj, mutableListOf())
+                    }
+                }
+            }
+        }
+
+        return path to maxCost
+    }
 }
 
 class Vertex<T>(val id: String, val data: T? = null, val weight: Double = 0.0) {
