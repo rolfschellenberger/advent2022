@@ -6,7 +6,7 @@ import org.junit.Test
 
 class MatrixTest {
 
-    var matrix = MatrixString.buildDefault(10, 20, ".")
+    private var matrix = MatrixString.buildDefault(10, 20, ".")
 
     @Before
     fun before() {

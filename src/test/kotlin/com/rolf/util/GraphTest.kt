@@ -6,11 +6,11 @@ import org.junit.Test
 
 class GraphTest {
 
-    val graph = Graph<Int>()
+    private var graph = Graph<Int>()
 
     @Before
     fun before() {
-        val graph = Graph<Int>()
+        graph = Graph()
     }
 
     @Test
@@ -84,8 +84,7 @@ class GraphTest {
         graph.addEdge("a", "c")
         graph.addEdge("c", "e")
 
-        val path = graph.path("a", "e")
-        val weight = graph.weight("a", "e")
+        val (path, weight) = graph.shortestPathAndWeight("a", "e")
         assertEquals(3, path.size)
         assertEquals(listOf("a", "c", "e"), path)
         assertEquals(2.0, weight, 0.0)
@@ -105,21 +104,21 @@ class GraphTest {
         graph.addEdge("a", "c", weight = 1.0)
         graph.addEdge("c", "e", weight = 1.0)
 
-        val (weight, path) = graph.weightAndPath("a", "e")
+        val (path, weight) = graph.shortestPathAndWeight("a", "e")
         assertEquals(3, path.size)
         assertEquals(listOf("a", "c", "e"), path)
         assertEquals(17.0, weight, 0.0)
 
         // Let's make this path worse
         graph.addEdge("a", "c", weight = 11.0)
-        val (weight2, path2) = graph.weightAndPath("a", "e")
+        val (path2, weight2) = graph.shortestPathAndWeight("a", "e")
         assertEquals(4, path2.size)
         assertEquals(listOf("a", "b", "d", "e"), path2)
         assertEquals(23.0, weight2, 0.0)
 
         // Let's make d worse
         graph.addVertex(Vertex("d", weight = 15.0))
-        val (weight3, path3) = graph.weightAndPath("a", "e")
+        val (path3, weight3) = graph.shortestPathAndWeight("a", "e")
         assertEquals(3, path3.size)
         assertEquals(listOf("a", "c", "e"), path3)
         assertEquals(27.0, weight3, 0.0)
@@ -142,14 +141,64 @@ class GraphTest {
         graph.addEdge("c", "d", EdgeType.UNDIRECTED)
         graph.addEdge("e", "a", EdgeType.DIRECTED)
 
-        val (weight, path) = graph.weightAndPath("a", "e")
+        val (path, weight) = graph.shortestPathAndWeight("a", "e")
         assertEquals(3, path.size)
         assertEquals(listOf("a", "c", "e"), path)
         assertEquals(2.0, weight, 0.0)
 
-        val (weight2, path2) = graph.weightAndPath("e", "a")
+        val (path2, weight2) = graph.shortestPathAndWeight("e", "a")
         assertEquals(2, path2.size)
         assertEquals(listOf("e", "a"), path2)
         assertEquals(1.0, weight2, 0.0)
+    }
+
+    @Test
+    fun testWrongFromTo() {
+        graph.addVertex(Vertex("a"))
+        graph.addVertex(Vertex("b"))
+        graph.addVertex(Vertex("c"))
+        graph.addVertex(Vertex("d"))
+        graph.addVertex(Vertex("e"))
+
+        graph.addEdge("a", "b")
+        graph.addEdge("b", "d")
+        graph.addEdge("c", "e")
+
+        val wrong = emptyList<String>() to Double.MAX_VALUE
+        assertEquals(wrong, graph.shortestPathAndWeight("wrong", "e"))
+        assertEquals(wrong, graph.shortestPathAndWeight("a", "wrong"))
+        assertEquals(wrong, graph.shortestPathAndWeight("a", "e"))
+    }
+
+    @Test
+    fun testAllPaths() {
+        graph.addVertex(Vertex("a"))
+        graph.addVertex(Vertex("b"))
+        graph.addVertex(Vertex("c"))
+        graph.addVertex(Vertex("d"))
+        graph.addVertex(Vertex("e"))
+
+        graph.addEdge("a", "b", EdgeType.UNDIRECTED)
+        graph.addEdge("b", "d", EdgeType.UNDIRECTED)
+        graph.addEdge("d", "e", EdgeType.UNDIRECTED)
+        graph.addEdge("a", "c", EdgeType.UNDIRECTED)
+        graph.addEdge("c", "e", EdgeType.DIRECTED)
+        val (path, weight) = graph.lowestPathAndWeightVisitAll(source = "b")
+        assertEquals(listOf("b", "a", "c", "e", "d"), path)
+        assertEquals(4.0, weight, 0.0)
+
+        val (path2, weight2) = graph.lowestPathAndWeightVisitAll(source = "b", destination = "a")
+        assertEquals(emptyList<String>(), path2)
+        assertEquals(Double.MAX_VALUE, weight2, 0.0)
+
+        graph.addEdge("a", "c", EdgeType.UNDIRECTED, 2.0)
+        val (path3, weight3) = graph.lowestPathAndWeightVisitAll()
+        assertEquals(listOf("c", "e", "d", "b", "a"), path3)
+        assertEquals(4.0, weight3, 0.0)
+
+        graph.addEdge("d", "e", EdgeType.UNDIRECTED, 3.0)
+        val (path4, weight4) = graph.lowestPathAndWeightVisitAll()
+        assertEquals(listOf("d", "b", "a", "c", "e"), path4)
+        assertEquals(5.0, weight4, 0.0)
     }
 }

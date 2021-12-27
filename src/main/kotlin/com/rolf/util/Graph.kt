@@ -1,9 +1,11 @@
 package com.rolf.util
 
+import java.util.*
+
 open class Graph<T> {
 
     private val vertices = mutableMapOf<String, Vertex<T>>()
-    private val edges = mutableMapOf<String, MutableSet<Edge<T>>>()
+    private val edges = mutableMapOf<String, MutableSet<Edge>>()
 
     fun addVertex(vertex: Vertex<T>) {
         vertices[vertex.id] = vertex
@@ -40,36 +42,30 @@ open class Graph<T> {
         }
     }
 
-    fun edge(source: String, destination: String): Edge<T>? {
+    fun edge(source: String, destination: String): Edge? {
         return edges[source]?.firstOrNull { it.destination == destination }
     }
 
-    fun edges(source: String): Set<Edge<T>> {
+    fun edges(source: String): Set<Edge> {
         return edges[source] ?: setOf()
     }
 
-    fun edges(): List<Edge<T>> {
+    fun edges(): List<Edge> {
         return edges.flatMap { it.value }
     }
 
-    fun weightAndPath(source: String, destination: String): Pair<Double, List<String>> {
+    fun shortestPathAndWeight(source: String, destination: String): Pair<List<String>, Double> {
         return dijkstra(source, destination)
     }
 
-    fun path(source: String, destination: String): List<String> {
-        val result = dijkstra(source, destination)
-        return result.second
-    }
-
-    fun weight(source: String, destination: String): Double {
-        val result = dijkstra(source, destination)
-        return result.first
-    }
-
-    private fun dijkstra(source: String, destination: String): Pair<Double, List<String>> {
+    private fun dijkstra(source: String, destination: String): Pair<List<String>, Double> {
         // Use Dijkstra's algorithm: https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
         // Mark all nodes unvisited. Create a set of all the unvisited nodes called the unvisited set.
         val unvisited = vertices().map { it.id }.toMutableSet()
+
+        if (!unvisited.contains(source) || !unvisited.contains(destination)) {
+            return emptyList<String>() to Double.MAX_VALUE
+        }
 
         // Assign to every node a tentative distance value: set it to zero for our initial node and to
         // infinity for all other nodes. The tentative distance of a node v is the length of the shortest
@@ -94,7 +90,7 @@ open class Graph<T> {
         unvisited: MutableSet<String>,
         distances: MutableMap<String, Double>,
         paths: MutableMap<String, MutableList<String>>
-    ): Pair<Double, List<String>> {
+    ): Pair<List<String>, Double> {
         // For the current node, consider all of its unvisited neighbors and calculate their tentative distances
         // through the current node. Compare the newly calculated tentative distance to the current assigned
         // value and assign the smaller one. For example, if the current node A is marked with a distance of 6,
@@ -107,8 +103,8 @@ open class Graph<T> {
             val neighbourId = edge.destination
             // Only visit the unvisited
             if (unvisited.contains(neighbourId)) {
-                val neighbour = getVertex(neighbourId)
-                val distanceValue = currentValue + edge.weight + neighbour!!.weight
+                val neighbour = getVertex(neighbourId)!!
+                val distanceValue = currentValue + edge.weight + neighbour.weight
                 val oldDistanceValue = distances.getOrDefault(neighbourId, Double.MAX_VALUE)
                 if (distanceValue < oldDistanceValue) {
                     distances[neighbourId] = distanceValue
@@ -127,7 +123,7 @@ open class Graph<T> {
         // a complete traversal; occurs when there is no connection between the initial node and remaining
         // unvisited nodes), then stop. The algorithm has finished.
         if (current == destination) {
-            return distances[destination]!! to paths[destination]!!
+            return paths[destination]!! to distances[destination]!!
         }
 
         var minUnvisited = ""
@@ -141,12 +137,76 @@ open class Graph<T> {
         }
         // No path possible
         if (minDistance == Double.MAX_VALUE) {
-            return minDistance to emptyList()
+            return emptyList<String>() to minDistance
         }
 
         // Otherwise, select the unvisited node that is marked with the smallest tentative distance, set it as
         // the new current node, and go back to step 3.
         return dijkstraRecursion(minUnvisited, destination, unvisited, distances, paths)
+    }
+
+    fun lowestPathAndWeightVisitAll(source: String? = null, destination: String? = null): Pair<List<String>, Double> {
+        // Use a modified version of Dijkstra's algorithm: https://www.baeldung.com/cs/shortest-path-visiting-all-nodes
+        // Initially, we declare an array called cost, which stores the shortest path to some node visiting a
+        // subset of nodes.
+        val costs = mutableMapOf<Cost, Double>()
+        val paths = mutableMapOf<Cost, MutableList<String>>()
+
+        // We also declare a priority queue that stores a node and a bitmask. The bitmask represents all visited
+        // nodes to get to this node. This priority queue will sort states in acceding order according to the cost
+        // of the state.
+        val queue = PriorityQueue<Cost>()
+
+        // Next, we try to start the shortest path from each node by adding each node to the priority queue and
+        // turning their bit on. Then, we run the Dijkstra algorithm.
+        for (vertex in vertices()) {
+            val cost = Cost(vertex.id, setOf(vertex.id), 0.0)
+            costs[cost] = 0.0
+            paths[cost] = mutableListOf(vertex.id)
+            queue.add(cost)
+        }
+
+        while (queue.isNotEmpty()) {
+            val current = queue.poll()
+            val currentId = current.id
+            val visitedVertices = current.visited
+            for (edge in edges(currentId)) {
+                val neighbourId = edge.destination
+                val neighbour = getVertex(neighbourId)!!
+                val distanceValue = edge.weight + neighbour.weight
+
+                val newVisitedVertices = visitedVertices + neighbourId
+                val newCost = costs[Cost(currentId, visitedVertices)]!! + distanceValue
+                val neighbourCost = Cost(neighbourId, newVisitedVertices, newCost)
+                val currentCost = costs.getOrDefault(neighbourCost, Double.MAX_VALUE)
+                if (newCost < currentCost) {
+                    val path = paths.getOrDefault(Cost(currentId, visitedVertices), mutableListOf())
+                    costs[neighbourCost] = newCost
+                    paths[neighbourCost] = (path + listOf(neighbourId)).toMutableList()
+                    queue.add(neighbourCost)
+                }
+            }
+        }
+
+        val vertices = vertices()
+        val visitedAll = vertices.map { it.id }.toSet()
+        var minCost = Double.MAX_VALUE
+        var path = mutableListOf<String>()
+        for (vertex in vertices) {
+            if (destination == null || destination == vertex.id) {
+                val costObj = Cost(vertex.id, visitedAll)
+                val cost = costs.getOrDefault(costObj, Double.MAX_VALUE)
+                val pathFound = paths.getOrDefault(costObj, mutableListOf())
+                if (source == null || source == pathFound.first()) {
+                    if (cost < minCost) {
+                        minCost = cost
+                        path = paths.getOrDefault(costObj, mutableListOf())
+                    }
+                }
+            }
+        }
+
+        return path to minCost
     }
 }
 
@@ -171,7 +231,7 @@ class Vertex<T>(val id: String, val data: T? = null, val weight: Double = 0.0) {
     }
 }
 
-class Edge<T>(val source: String, val destination: String, val weight: Double = 1.0) {
+class Edge(val source: String, val destination: String, val weight: Double = 1.0) {
     override fun toString(): String {
         return "Edge(source=$source, destination=$destination, weight=$weight)"
     }
@@ -180,7 +240,7 @@ class Edge<T>(val source: String, val destination: String, val weight: Double = 
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as Edge<*>
+        other as Edge
 
         if (source != other.source) return false
         if (destination != other.destination) return false
@@ -198,4 +258,32 @@ class Edge<T>(val source: String, val destination: String, val weight: Double = 
 enum class EdgeType {
     DIRECTED,
     UNDIRECTED
+}
+
+class Cost(val id: String, val visited: Set<String>, private val cost: Double = Double.MAX_VALUE) : Comparable<Cost> {
+    override fun compareTo(other: Cost): Int {
+        return cost.compareTo(other.cost)
+    }
+
+    override fun toString(): String {
+        return "Cost(id='$id', visited=$visited, cost=$cost)"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Cost
+
+        if (id != other.id) return false
+        if (visited != other.visited) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + visited.hashCode()
+        return result
+    }
 }
