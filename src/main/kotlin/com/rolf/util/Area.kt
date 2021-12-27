@@ -1,6 +1,6 @@
 package com.rolf.util
 
-data class Area(val xRange: IntRange, val yRange: IntRange, val zRange: IntRange) {
+open class Area(val xRange: IntRange, val yRange: IntRange, val zRange: IntRange) {
 
     private val voids = mutableListOf<Area>()
 
@@ -42,5 +42,29 @@ data class Area(val xRange: IntRange, val yRange: IntRange, val zRange: IntRange
         val volume = x * y * z
         val voidVolume = voids.map { it.volume() }.sum()
         return volume - voidVolume
+    }
+
+    override fun toString(): String {
+        return "Area(xRange=$xRange, yRange=$yRange, zRange=$zRange)"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Area
+
+        if (xRange != other.xRange) return false
+        if (yRange != other.yRange) return false
+        if (zRange != other.zRange) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = xRange.hashCode()
+        result = 31 * result + yRange.hashCode()
+        result = 31 * result + zRange.hashCode()
+        return result
     }
 }

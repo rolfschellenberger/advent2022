@@ -4,7 +4,7 @@ import kotlin.math.cos
 import kotlin.math.round
 import kotlin.math.sin
 
-data class Location(val x: Int, val y: Int, val z: Int) : Comparable<Location> {
+open class Location(val x: Int, val y: Int, val z: Int) : Comparable<Location> {
 
     fun rotateX(degrees: Double): Location {
         val radians = Math.toRadians(degrees)
@@ -27,15 +27,35 @@ data class Location(val x: Int, val y: Int, val z: Int) : Comparable<Location> {
         return Location(x1, y1, z)
     }
 
-    override fun toString(): String {
-        return "$x,$y,$z"
-    }
-
     override fun compareTo(other: Location): Int {
         val xCompare = x.compareTo(other.x)
         if (xCompare != 0) return xCompare
         val yCompare = y.compareTo(other.y)
         if (yCompare != 0) return yCompare
         return z.compareTo(other.z)
+    }
+
+    override fun toString(): String {
+        return "Location(x=$x, y=$y, z=$z)"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Location
+
+        if (x != other.x) return false
+        if (y != other.y) return false
+        if (z != other.z) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = x
+        result = 31 * result + y
+        result = 31 * result + z
+        return result
     }
 }

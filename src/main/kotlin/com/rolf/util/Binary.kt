@@ -3,7 +3,7 @@ package com.rolf.util
 import java.math.BigInteger
 import kotlin.math.pow
 
-class Binary(var value: Long, val bits: Int = 16) {
+open class Binary(var value: Long, val bits: Int = 16) {
 
     constructor(value: String, bits: Int = 16) : this(toLong(value), bits)
 
