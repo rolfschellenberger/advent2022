@@ -34,14 +34,14 @@ open class Graph<T> {
         if (s != null && d != null) {
             val edgeList = edges.getOrDefault(source, mutableSetOf())
             // Overwrite edges
-            edgeList.remove(Edge(s, d, weight))
-            edgeList.add(Edge(s, d, weight))
+            edgeList.remove(Edge(source, destination, weight))
+            edgeList.add(Edge(source, destination, weight))
             edges[source] = edgeList
         }
     }
 
     fun edge(source: String, destination: String): Edge<T>? {
-        return edges[source]?.firstOrNull { it.destination.id == destination }
+        return edges[source]?.firstOrNull { it.destination == destination }
     }
 
     fun edges(source: String): Set<Edge<T>> {
@@ -52,7 +52,21 @@ open class Graph<T> {
         return edges.flatMap { it.value }
     }
 
+    fun weightAndPath(source: String, destination: String): Pair<Double, List<String>> {
+        return dijkstra(source, destination)
+    }
+
     fun path(source: String, destination: String): List<String> {
+        val result = dijkstra(source, destination)
+        return result.second
+    }
+
+    fun weight(source: String, destination: String): Double {
+        val result = dijkstra(source, destination)
+        return result.first
+    }
+
+    private fun dijkstra(source: String, destination: String): Pair<Double, List<String>> {
         // Use Dijkstra's algorithm: https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
         // Mark all nodes unvisited. Create a set of all the unvisited nodes called the unvisited set.
         val unvisited = vertices().map { it.id }.toMutableSet()
@@ -63,20 +77,24 @@ open class Graph<T> {
         // to any other vertex than the source itself (which is a path of length zero), all other tentative
         // distances are initially set to infinity. Set the initial node as current.
         val distances = mutableMapOf<String, Double>()
+        val paths = mutableMapOf<String, MutableList<String>>()
         for (id in unvisited) {
             distances[id] = Double.MAX_VALUE
+            paths[id] = mutableListOf()
         }
-        distances[source] = 0.0
+        distances[source] = getVertex(source)!!.weight
+        paths[source]?.add(source)
 
-        return dijkstra(source, destination, unvisited, distances)
+        return dijkstraRecursion(source, destination, unvisited, distances, paths)
     }
 
-    private fun dijkstra(
+    private tailrec fun dijkstraRecursion(
         current: String,
         destination: String,
         unvisited: MutableSet<String>,
-        distances: MutableMap<String, Double>
-    ): List<String> {
+        distances: MutableMap<String, Double>,
+        paths: MutableMap<String, MutableList<String>>
+    ): Pair<Double, List<String>> {
         // For the current node, consider all of its unvisited neighbors and calculate their tentative distances
         // through the current node. Compare the newly calculated tentative distance to the current assigned
         // value and assign the smaller one. For example, if the current node A is marked with a distance of 6,
@@ -85,13 +103,18 @@ open class Graph<T> {
         // the current value will be kept.
         val currentValue = distances.getOrDefault(current, 0.0)
 
-        for (neighbour in edges(current)) {
-            val neighbourId = neighbour.destination.id
+        for (edge in edges(current)) {
+            val neighbourId = edge.destination
             // Only visit the unvisited
             if (unvisited.contains(neighbourId)) {
-                val distanceValue = currentValue + neighbour.weight
-                val destinationValue = minOf(distanceValue, distances.getOrDefault(neighbourId, Double.MAX_VALUE))
-                distances[neighbourId] = destinationValue
+                val neighbour = getVertex(neighbourId)
+                val distanceValue = currentValue + edge.weight + neighbour!!.weight
+                val oldDistanceValue = distances.getOrDefault(neighbourId, Double.MAX_VALUE)
+                if (distanceValue < oldDistanceValue) {
+                    distances[neighbourId] = distanceValue
+                    val path = paths.getOrDefault(current, mutableListOf()) + listOf(neighbourId)
+                    paths[neighbourId] = path.toMutableList()
+                }
             }
         }
 
@@ -104,8 +127,7 @@ open class Graph<T> {
         // a complete traversal; occurs when there is no connection between the initial node and remaining
         // unvisited nodes), then stop. The algorithm has finished.
         if (current == destination) {
-            // TODO define path?
-            return emptyList()
+            return distances[destination]!! to paths[destination]!!
         }
 
         var minUnvisited = ""
@@ -119,17 +141,12 @@ open class Graph<T> {
         }
         // No path possible
         if (minDistance == Double.MAX_VALUE) {
-            return emptyList()
+            return minDistance to emptyList()
         }
 
         // Otherwise, select the unvisited node that is marked with the smallest tentative distance, set it as
         // the new current node, and go back to step 3.
-        return dijkstra(minUnvisited, destination, unvisited, distances)
-    }
-
-    fun weight(vertices: List<String>): Double {
-        // Go for lowest weight
-        return 0.0
+        return dijkstraRecursion(minUnvisited, destination, unvisited, distances, paths)
     }
 }
 
@@ -154,7 +171,7 @@ class Vertex<T>(val id: String, val data: T? = null, val weight: Double = 0.0) {
     }
 }
 
-class Edge<T>(val source: Vertex<T>, val destination: Vertex<T>, val weight: Double = 1.0) {
+class Edge<T>(val source: String, val destination: String, val weight: Double = 1.0) {
     override fun toString(): String {
         return "Edge(source=$source, destination=$destination, weight=$weight)"
     }

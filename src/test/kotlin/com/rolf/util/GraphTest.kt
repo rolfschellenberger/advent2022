@@ -56,7 +56,7 @@ class GraphTest {
         assertEquals(3, graph.vertices().size)
         assertEquals(3, graph.edges().size)
         assertEquals(2, graph.edges("a").size) // a->b and a single a->c
-        assertEquals(2.0, graph.edges("a").first { it.destination.id == "c" }.weight, 0.0)
+        assertEquals(2.0, graph.edges("a").first { it.destination == "c" }.weight, 0.0)
 
         graph.addEdge("a", "b", edgeType = EdgeType.UNDIRECTED)
         assertEquals(3, graph.vertices().size)
@@ -71,12 +71,33 @@ class GraphTest {
     }
 
     @Test
-    fun testPath() {
+    fun testPathAndWeight() {
         graph.addVertex(Vertex("a"))
         graph.addVertex(Vertex("b"))
         graph.addVertex(Vertex("c"))
         graph.addVertex(Vertex("d"))
         graph.addVertex(Vertex("e"))
+
+        graph.addEdge("a", "b")
+        graph.addEdge("b", "d")
+        graph.addEdge("d", "e")
+        graph.addEdge("a", "c")
+        graph.addEdge("c", "e")
+
+        val path = graph.path("a", "e")
+        val weight = graph.weight("a", "e")
+        assertEquals(3, path.size)
+        assertEquals(listOf("a", "c", "e"), path)
+        assertEquals(2.0, weight, 0.0)
+    }
+
+    @Test
+    fun testWeightedVertices() {
+        graph.addVertex(Vertex("a", weight = 5.0))
+        graph.addVertex(Vertex("b", weight = 5.0))
+        graph.addVertex(Vertex("c", weight = 5.0))
+        graph.addVertex(Vertex("d", weight = 5.0))
+        graph.addVertex(Vertex("e", weight = 5.0))
 
         graph.addEdge("a", "b", weight = 1.0)
         graph.addEdge("b", "d", weight = 1.0)
@@ -84,13 +105,51 @@ class GraphTest {
         graph.addEdge("a", "c", weight = 1.0)
         graph.addEdge("c", "e", weight = 1.0)
 
-        val path = graph.path("a", "e")
+        val (weight, path) = graph.weightAndPath("a", "e")
         assertEquals(3, path.size)
-        assertEquals(listOf("a", "b", "e"), path)
+        assertEquals(listOf("a", "c", "e"), path)
+        assertEquals(17.0, weight, 0.0)
+
+        // Let's make this path worse
+        graph.addEdge("a", "c", weight = 11.0)
+        val (weight2, path2) = graph.weightAndPath("a", "e")
+        assertEquals(4, path2.size)
+        assertEquals(listOf("a", "b", "d", "e"), path2)
+        assertEquals(23.0, weight2, 0.0)
+
+        // Let's make d worse
+        graph.addVertex(Vertex("d", weight = 15.0))
+        val (weight3, path3) = graph.weightAndPath("a", "e")
+        assertEquals(3, path3.size)
+        assertEquals(listOf("a", "c", "e"), path3)
+        assertEquals(27.0, weight3, 0.0)
     }
 
     @Test
-    fun testWeight() {
+    fun testUndirectedPath() {
+        graph.addVertex(Vertex("a"))
+        graph.addVertex(Vertex("b"))
+        graph.addVertex(Vertex("c"))
+        graph.addVertex(Vertex("d"))
+        graph.addVertex(Vertex("e"))
 
+        graph.addEdge("a", "b", EdgeType.UNDIRECTED)
+        graph.addEdge("b", "d", EdgeType.UNDIRECTED)
+        graph.addEdge("d", "e", EdgeType.UNDIRECTED)
+        graph.addEdge("a", "c", EdgeType.UNDIRECTED)
+        graph.addEdge("c", "e", EdgeType.UNDIRECTED)
+        graph.addEdge("b", "c", EdgeType.UNDIRECTED)
+        graph.addEdge("c", "d", EdgeType.UNDIRECTED)
+        graph.addEdge("e", "a", EdgeType.DIRECTED)
+
+        val (weight, path) = graph.weightAndPath("a", "e")
+        assertEquals(3, path.size)
+        assertEquals(listOf("a", "c", "e"), path)
+        assertEquals(2.0, weight, 0.0)
+
+        val (weight2, path2) = graph.weightAndPath("e", "a")
+        assertEquals(2, path2.size)
+        assertEquals(listOf("e", "a"), path2)
+        assertEquals(1.0, weight2, 0.0)
     }
 }
