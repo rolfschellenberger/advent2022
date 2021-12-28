@@ -38,3 +38,23 @@ fun groupLines(lines: List<String>, match: String): List<List<String>> {
     groups.add(group)
     return groups
 }
+
+fun <T> getPermutations(options: List<T>, size: Int = options.size, position: Int = 0): List<List<T>> {
+    if (position >= size || options.isEmpty()) {
+        return listOf(emptyList())
+    }
+    if (options.size == 1) {
+        return listOf(listOf(options[0]))
+    }
+
+    val result = mutableListOf<List<T>>()
+    for (option in options) {
+        val newOptions = options.toMutableList()
+        newOptions.remove(option)
+        for (permutation in getPermutations(newOptions, size, position + 1)) {
+            result.add(listOf(option) + permutation)
+        }
+    }
+
+    return result
+}

@@ -64,4 +64,47 @@ class FilesTest {
         assertEquals(5, groups[1].size)
         assertEquals(5, groups[2].size)
     }
+
+    @Test
+    fun testPermutations() {
+        val permutations = getPermutations(listOf("a", "b"))
+        assertEquals(2, permutations.size)
+        assertEquals(listOf(listOf("a", "b"), listOf("b", "a")), permutations)
+
+        val permutations2 = getPermutations(listOf("a", "b", "c"))
+        assertEquals(6, permutations2.size)
+        assertEquals(
+            listOf(
+                listOf("a", "b", "c"),
+                listOf("a", "c", "b"),
+                listOf("b", "a", "c"),
+                listOf("b", "c", "a"),
+                listOf("c", "a", "b"),
+                listOf("c", "b", "a")
+            ), permutations2
+        )
+
+        val permutations3 = getPermutations(listOf("a", "a"))
+        assertEquals(2, permutations3.size)
+        assertEquals(1, permutations3.toSet().size)
+
+        val permutations4 = getPermutations(listOf("a", "a", "b"))
+        assertEquals(6, permutations4.size)
+        assertEquals(3, permutations4.toSet().size)
+
+        assertEquals(5040, getPermutations(listOf("a", "b", "c", "d", "e", "f", "g")).size)
+
+        val permutations5 = getPermutations(listOf("a", "b", "c"), size = 2)
+        assertEquals(6, permutations5.size)
+        assertEquals(
+            listOf(
+                listOf("a", "b"),
+                listOf("a", "c"),
+                listOf("b", "a"),
+                listOf("b", "c"),
+                listOf("c", "a"),
+                listOf("c", "b")
+            ), permutations5
+        )
+    }
 }
