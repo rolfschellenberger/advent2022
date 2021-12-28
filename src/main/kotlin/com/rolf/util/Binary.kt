@@ -1,14 +1,13 @@
 package com.rolf.util
 
 import java.math.BigInteger
-import kotlin.math.pow
 
 open class Binary(var value: Long, val bits: Int = 16) {
 
     constructor(value: String, bits: Int = 16) : this(toLong(value), bits)
 
     val length = bits
-    private val maskValue: Long = 2.0.pow(bits).toLong() - 1
+    private val maskValue: Long = (1L shl bits) - 1
 
     init {
         value = mask(value)
@@ -92,26 +91,23 @@ open class Binary(var value: Long, val bits: Int = 16) {
     }
 
     operator fun get(index: Int): Boolean {
-        return value and 2.0.pow(index).toLong() != 0L
+        return value and (1L shl index) != 0L
     }
 
     operator fun set(index: Int, newValue: Boolean) {
-        val currentValue = get(index)
-        if (currentValue != newValue) {
-            val pow = 2.0.pow(index).toLong()
-            val v = when (currentValue) {
-                true -> value xor pow
-                false -> value or pow
-            }
-            value = mask(v)
+        val v = if (newValue) {
+            value or (1L shl index)
+        } else {
+            value and (1L shl index).inv()
         }
+        value = mask(v)
     }
 
     companion object {
         private fun toLong(binaryNumber: String): Long {
             var sum = 0L
             binaryNumber.reversed().forEachIndexed { k, v ->
-                sum += (v.toString().toInt() * 2.0.pow(k)).toLong()
+                sum += (v.toString().toInt() * (1L shl k))
             }
             return sum
         }
