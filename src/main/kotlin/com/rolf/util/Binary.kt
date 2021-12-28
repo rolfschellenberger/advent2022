@@ -92,16 +92,19 @@ open class Binary(var value: Long, val bits: Int = 16) {
     }
 
     operator fun get(index: Int): Boolean {
-        return toString(true).reversed()[index] == '1'
+        return value and 2.0.pow(index).toLong() != 0L
     }
 
     operator fun set(index: Int, newValue: Boolean) {
-        val binaryString = toString(true)
-        val to = length - index
-        val from = to - 1
-        val replacement = if (newValue) "1" else "0"
-        val newBinaryString = binaryString.replaceRange(from, to, replacement)
-        value = mask(toLong(newBinaryString))
+        val currentValue = get(index)
+        if (currentValue != newValue) {
+            val pow = 2.0.pow(index).toLong()
+            val v = when (currentValue) {
+                true -> value xor pow
+                false -> value or pow
+            }
+            value = mask(v)
+        }
     }
 
     companion object {

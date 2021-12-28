@@ -146,6 +146,10 @@ class BinaryTest {
         val a = Binary("11010001")
         a[0] = false
         assertEquals("11010000", a.toString())
+        a[0] = false
+        assertEquals("11010000", a.toString())
+        a[5] = true
+        assertEquals("11110000", a.toString())
         a[5] = true
         assertEquals("11110000", a.toString())
         a[15] = true
