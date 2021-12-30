@@ -348,4 +348,31 @@ class MatrixTest {
             """.trimIndent()
         assertEquals(expected, matrix.toString())
     }
+
+    @Test
+    fun testReplace() {
+        matrix.set(3, 3, "a")
+        matrix.set(3, 4, "a")
+        matrix.set(3, 5, "a")
+        matrix.set(4, 6, "b")
+        matrix.set(4, 7, "b")
+
+        assertEquals(3, matrix.count("a"))
+        assertEquals(2, matrix.count("b"))
+        assertEquals(195, matrix.count("."))
+        assertEquals(0, matrix.count("z"))
+        assertEquals(0, matrix.count("#"))
+
+        val map = mapOf(
+            "a" to "z",
+            "." to "#"
+        )
+        matrix.replace(map)
+
+        assertEquals(0, matrix.count("a"))
+        assertEquals(2, matrix.count("b"))
+        assertEquals(0, matrix.count("."))
+        assertEquals(3, matrix.count("z"))
+        assertEquals(195, matrix.count("#"))
+    }
 }

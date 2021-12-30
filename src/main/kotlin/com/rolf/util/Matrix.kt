@@ -231,6 +231,15 @@ open class Matrix<T>(internal val input: MutableList<MutableList<T>>) {
         return toString("", "\n")
     }
 
+    fun replace(map: Map<T, T>) {
+        for (point in allPoints()) {
+            val value = get(point)
+            if (map.containsKey(value)) {
+                set(point, map[value]!!)
+            }
+        }
+    }
+
     companion object {
         fun <T> buildDefault(width: Int, height: Int, defaultValue: T): Matrix<T> {
             val rows = mutableListOf<MutableList<T>>()
