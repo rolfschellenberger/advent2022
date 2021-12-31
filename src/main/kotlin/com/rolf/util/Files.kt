@@ -1,10 +1,15 @@
 package com.rolf.util
 
+import java.util.regex.Pattern
+
 fun readLines(fileName: String): List<String> {
     return object {}.javaClass.getResource(fileName).readText().split("\n")
 }
 
-fun splitLine(line: String, delimiter: String = "", chunkSize: Int = 1): List<String> {
+fun splitLine(line: String, delimiter: String = "", pattern: Pattern? = null, chunkSize: Int = 1): List<String> {
+    if (pattern != null) {
+        return splitLine(line, pattern)
+    }
     if (delimiter.isEmpty()) {
         return splitLine(line, maxOf(1, chunkSize))
     }
@@ -19,8 +24,17 @@ private fun splitLine(line: String, delimiter: String): List<String> {
     return line.split(delimiter)
 }
 
-fun splitLines(lines: List<String>, delimiter: String = "", chunkSize: Int = 1): List<List<String>> {
-    return lines.map { splitLine(it, delimiter, chunkSize) }
+private fun splitLine(line: String, pattern: Pattern): List<String> {
+    return line.split(pattern)
+}
+
+fun splitLines(
+    lines: List<String>,
+    delimiter: String = "",
+    pattern: Pattern? = null,
+    chunkSize: Int = 1
+): List<List<String>> {
+    return lines.map { splitLine(it, delimiter, pattern, chunkSize) }
 }
 
 fun groupLines(lines: List<String>, match: String): List<List<String>> {

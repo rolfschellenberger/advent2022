@@ -26,6 +26,13 @@ class FilesTest {
     }
 
     @Test
+    fun testSplitLinePattern() {
+        val input = "a b c def    g h ijk"
+        assertEquals(10, splitLine(input, pattern = "\\s".toPattern()).size)
+        assertEquals(7, splitLine(input, pattern = "\\s+".toPattern()).size)
+    }
+
+    @Test
     fun testSplitLines() {
         val lines = readLines("/bingo.txt")
         val splits1 = splitLines(lines)
