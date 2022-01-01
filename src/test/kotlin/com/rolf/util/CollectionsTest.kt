@@ -49,6 +49,27 @@ class CollectionsTest {
     }
 
     @Test
+    fun testPermutationsFunction() {
+        val results = mutableListOf<List<String>>()
+        fun doIt(permutation: List<String>) {
+            results.add(permutation)
+        }
+
+        getPermutations(listOf("a", "b", "c"), ::doIt)
+        assertEquals(6, results.size)
+        assertEquals(
+            listOf(
+                listOf("a", "b", "c"),
+                listOf("a", "c", "b"),
+                listOf("b", "a", "c"),
+                listOf("b", "c", "a"),
+                listOf("c", "a", "b"),
+                listOf("c", "b", "a")
+            ), results
+        )
+    }
+
+    @Test
     fun testCombinations() {
         val options = listOf("a", "b", "c", "d")
         val expected = listOf(
