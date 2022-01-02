@@ -375,4 +375,20 @@ class MatrixTest {
         assertEquals(3, matrix.count("z"))
         assertEquals(195, matrix.count("#"))
     }
+
+    @Test
+    fun testRotate() {
+        matrix.cutOut(Point(0, 0), Point(9, 9))
+        matrix.set(matrix.topLeft(), "A")
+        matrix.set(matrix.topRight(), "B")
+        matrix.set(matrix.bottomLeft(), "C")
+        matrix.set(matrix.bottomRight(), "D")
+
+        matrix.rotateRight()
+
+        assertEquals("C", matrix.get(matrix.topLeft()))
+        assertEquals("A", matrix.get(matrix.topRight()))
+        assertEquals("D", matrix.get(matrix.bottomLeft()))
+        assertEquals("B", matrix.get(matrix.bottomRight()))
+    }
 }

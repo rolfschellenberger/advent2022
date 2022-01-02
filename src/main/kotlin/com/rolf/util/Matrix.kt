@@ -4,6 +4,11 @@ import kotlin.math.abs
 
 open class Matrix<T>(internal val input: MutableList<MutableList<T>>) {
 
+    fun topLeft() = Point(0, 0)
+    fun topRight() = Point(width() - 1, 0)
+    fun bottomLeft() = Point(0, height() - 1)
+    fun bottomRight() = Point(width() - 1, height() - 1)
+
     fun allElements(): List<T> {
         return input.flatten()
     }
@@ -238,6 +243,18 @@ open class Matrix<T>(internal val input: MutableList<MutableList<T>>) {
                 set(point, map[value]!!)
             }
         }
+    }
+
+    fun rotateRight() {
+        if (width() != height()) throw Exception("Cannot rotate when dimensions are unequal!")
+
+        val rows = mutableListOf<MutableList<T>>()
+        for (x in 0 until width()) {
+            rows.add(getColumn(x).reversed().toMutableList())
+        }
+
+        input.clear()
+        input.addAll(rows)
     }
 
     companion object {
