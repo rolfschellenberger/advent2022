@@ -96,4 +96,53 @@ class CollectionsTest {
         assertEquals(0, getCombinations(listOf<String>()).size)
         assertEquals(1, getCombinations(listOf("a")).size)
     }
+
+    @Test
+    fun testCombinationsFunction() {
+        val results = mutableListOf<List<String>>()
+        fun doIt(combination: List<String>) {
+            results.add(combination)
+        }
+
+        getCombinations(listOf("a", "b", "c", "d"), ::doIt)
+        assertEquals(15, results.size)
+        assertEquals(
+            listOf(
+                listOf("a", "b", "c", "d"),
+                listOf("a", "b", "c"),
+                listOf("a", "b", "d"),
+                listOf("a", "b"),
+                listOf("a", "c", "d"),
+                listOf("a", "c"),
+                listOf("a", "d"),
+                listOf("a"),
+                listOf("b", "c", "d"),
+                listOf("b", "c"),
+                listOf("b", "d"),
+                listOf("b"),
+                listOf("c", "d"),
+                listOf("c"),
+                listOf("d")
+            ), results
+        )
+
+        fun earlyTerminate(options: List<String>): Boolean {
+            return options.contains("b")
+        }
+
+        results.clear()
+        getCombinations(listOf("a", "b", "c", "d"), ::doIt, ::earlyTerminate)
+        assertEquals(7, results.size)
+        assertEquals(
+            listOf(
+                listOf("a", "c", "d"),
+                listOf("a", "c"),
+                listOf("a", "d"),
+                listOf("a"),
+                listOf("c", "d"),
+                listOf("c"),
+                listOf("d")
+            ), results
+        )
+    }
 }

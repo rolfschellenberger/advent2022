@@ -75,3 +75,22 @@ fun <T> getCombinations(options: List<T>, cache: MutableMap<String, List<List<T>
     cache[key] = result
     return result
 }
+
+fun <T> getCombinations(
+    options: List<T>,
+    onNextCombination: (List<T>) -> Unit,
+    earlyTermination: (List<T>) -> Boolean = { _ -> false },
+    prefix: List<T> = emptyList()
+) {
+    if (earlyTermination(prefix)) {
+        return
+    }
+    for (index in 1..options.size) {
+        val current = options[index - 1]
+        val newOptions = options.subList(index, options.size)
+        getCombinations(newOptions, onNextCombination, earlyTermination, prefix + current)
+    }
+    if (prefix.isNotEmpty()) {
+        onNextCombination(prefix)
+    }
+}
