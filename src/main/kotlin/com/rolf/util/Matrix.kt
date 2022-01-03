@@ -218,24 +218,6 @@ open class Matrix<T>(internal val input: MutableList<MutableList<T>>) {
         input.addAll(newMatrix.input)
     }
 
-    fun toString(separatorElement: String, separatorLine: String): String {
-        val builder = StringBuilder()
-        for (y in 0 until height()) {
-            for (x in 0 until width()) {
-                val value = get(x, y)
-                builder.append(value)
-                builder.append(separatorElement)
-            }
-            builder.delete(builder.length - separatorElement.length, builder.length)
-            builder.append(separatorLine)
-        }
-        return builder.removeSuffix(separatorLine).toString()
-    }
-
-    override fun toString(): String {
-        return toString("", "\n")
-    }
-
     fun replace(map: Map<T, T>) {
         for (point in allPoints()) {
             val value = get(point)
@@ -255,6 +237,29 @@ open class Matrix<T>(internal val input: MutableList<MutableList<T>>) {
 
         input.clear()
         input.addAll(rows)
+    }
+
+    fun copy(): Matrix<T> {
+        val inputCopy = input.map { it -> it.map { it }.toMutableList() }.toMutableList()
+        return Matrix(inputCopy)
+    }
+
+    fun toString(separatorElement: String, separatorLine: String): String {
+        val builder = StringBuilder()
+        for (y in 0 until height()) {
+            for (x in 0 until width()) {
+                val value = get(x, y)
+                builder.append(value)
+                builder.append(separatorElement)
+            }
+            builder.delete(builder.length - separatorElement.length, builder.length)
+            builder.append(separatorLine)
+        }
+        return builder.removeSuffix(separatorLine).toString()
+    }
+
+    override fun toString(): String {
+        return toString("", "\n")
     }
 
     companion object {

@@ -391,4 +391,14 @@ class MatrixTest {
         assertEquals("D", matrix.get(matrix.bottomLeft()))
         assertEquals("B", matrix.get(matrix.bottomRight()))
     }
+
+    @Test
+    fun testCopy() {
+        val a = MatrixInt.buildDefault(4, 4, 0)
+        a.set(3, 3, 3)
+        val b = a.copy()
+        a.set(1, 1, 1)
+        assertEquals(3, b.get(3, 3))
+        assertEquals(0, b.get(1, 1))
+    }
 }
