@@ -1,6 +1,6 @@
 package com.rolf.util
 
-fun String.isNumeric() = this.all { it in '0'..'9' }
+fun String.isNumeric() = toIntOrNull() != null
 
 fun joinSideBySide(lines: List<String>): String {
     var height = 0

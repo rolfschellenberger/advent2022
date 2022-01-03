@@ -8,7 +8,7 @@ class StringTest {
     @Test
     fun getNumeric() {
         assertTrue("1234".isNumeric())
-        assertFalse("-23".isNumeric())
+        assertTrue("-23".isNumeric())
         assertFalse("123.45".isNumeric())
         assertFalse("asdf234".isNumeric())
     }
