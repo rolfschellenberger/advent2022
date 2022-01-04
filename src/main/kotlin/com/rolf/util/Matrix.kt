@@ -1,5 +1,6 @@
 package com.rolf.util
 
+import java.util.*
 import kotlin.math.abs
 
 open class Matrix<T>(internal val input: MutableList<MutableList<T>>) {
@@ -290,6 +291,35 @@ open class MatrixString(input: MutableList<MutableList<String>>) : Matrix<String
 }
 
 open class MatrixInt(input: MutableList<MutableList<Int>>) : Matrix<Int>(input) {
+
+    fun shortestPath(from: Point, to: Point, diagonal: Boolean = false): Int {
+        // Start from 0 at the starting point
+        set(from, 0)
+
+        val compareBySteps: Comparator<Pair<Int, Point>> = compareBy { it.first }
+        val priorityQueue = PriorityQueue(compareBySteps)
+        priorityQueue.add(get(from) to from)
+
+        while (priorityQueue.isNotEmpty()) {
+            val next = priorityQueue.remove()
+            val minSteps = next.first
+            val location = next.second
+
+            if (location == to) {
+                return minSteps
+            }
+
+            // Push the neighbours to the steps queue
+            for (neighbour in getNeighbours(location, diagonal = diagonal)) {
+                if (get(neighbour) > minSteps) {
+                    set(neighbour, minSteps + 1)
+                    priorityQueue.add(minSteps + 1 to neighbour)
+                }
+            }
+        }
+        throw Exception("No shortest path found")
+    }
+
     companion object {
         fun buildDefault(width: Int, height: Int, defaultValue: Int): MatrixInt {
             return MatrixInt(Matrix.buildDefault(width, height, defaultValue).input)
@@ -297,6 +327,19 @@ open class MatrixInt(input: MutableList<MutableList<Int>>) : Matrix<Int>(input) 
 
         fun build(input: List<List<String>>): MatrixInt {
             return MatrixInt(input.map { list -> list.map { it.toInt() }.toMutableList() }.toMutableList())
+        }
+
+        fun buildForShortestPath(matrix: MatrixString, wallValue: String): MatrixInt {
+            // Every field will get the maximum penalty to find the shortest path
+            val result = buildDefault(matrix.width(), matrix.height(), Int.MAX_VALUE)
+            // The wall values are going to be replaced with the lowest value, so they will not be picked during
+            // the shortest path traversal
+            for (point in matrix.allPoints()) {
+                if (matrix.get(point) == wallValue) {
+                    result.set(point, Int.MIN_VALUE)
+                }
+            }
+            return result
         }
     }
 }

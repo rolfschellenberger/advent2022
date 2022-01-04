@@ -401,4 +401,42 @@ class MatrixTest {
         assertEquals(3, b.get(3, 3))
         assertEquals(0, b.get(1, 1))
     }
+
+    @Test
+    fun testShortestPath() {
+        val input = """
+            ..#.......
+            .#........
+            .#........
+            .#........
+            .#........
+            .#........
+            .#.#......
+            .#.#......
+            .#.#......
+            ...#......
+            """.trimIndent().lines()
+        val maze = MatrixString.build(splitLines(input))
+
+        val path = MatrixInt.buildForShortestPath(maze, "#")
+        val start = Point(0, 0)
+        val end = Point(9, 9)
+        val distance = path.shortestPath(start, end)
+        assertEquals(26, distance)
+
+        // Diagonal test
+        val path2 = MatrixInt.buildForShortestPath(maze, "#")
+        val distance2 = path2.shortestPath(start, end, diagonal = true)
+        assertEquals(10, distance2)
+
+        // 2,6 closing path
+        val path3 = MatrixInt.buildForShortestPath(maze, "#")
+        path3.set(2, 6, Int.MIN_VALUE)
+        try {
+            path3.shortestPath(start, end)
+            fail("Expected not to find a shortest path")
+        } catch (e: Exception) {
+            assertEquals("No shortest path found", e.message)
+        }
+    }
 }
