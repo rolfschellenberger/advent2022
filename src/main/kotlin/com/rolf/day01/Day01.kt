@@ -1,23 +1,18 @@
 package com.rolf.day01
 
-import com.rolf.util.readLines
-
-const val DAY = "01"
+import com.rolf.Day
 
 fun main() {
-    println("+--------+")
-    println("| Day $DAY |")
-    println("+--------+")
-    val lines = readLines("/$DAY.txt")
-
-    println("-- Part 1 --")
-    solve1(lines)
-    println("-- Part 2 --")
-    solve2(lines)
+    Day01().run()
 }
 
-fun solve1(lines: List<String>) {
-}
+class Day01 : Day() {
+    override fun solve1(lines: List<String>) {
+        TODO("Not yet implemented")
+    }
 
-fun solve2(lines: List<String>) {
+    override fun solve2(lines: List<String>) {
+        TODO("Not yet implemented")
+    }
+
 }
