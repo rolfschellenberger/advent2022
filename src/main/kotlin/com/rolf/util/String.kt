@@ -31,3 +31,25 @@ fun joinSideBySide(lines: List<String>): String {
 
     return result.toString()
 }
+
+fun getCharacterCounts(hash: String): Map<Int, List<Char>> {
+    val result = mutableMapOf<Int, MutableList<Char>>()
+    var lastChar: Char? = null
+    var sequence = 0
+    for (char in hash) {
+        if (lastChar == null || lastChar == char) {
+            sequence++
+        } else {
+            result.computeIfAbsent(sequence) { mutableListOf() }
+            result[sequence]?.add(lastChar)
+            sequence = 1
+        }
+        lastChar = char
+    }
+    if (lastChar != null) {
+        result.computeIfAbsent(sequence) { mutableListOf() }
+        result[sequence]?.add(lastChar)
+    }
+
+    return result
+}

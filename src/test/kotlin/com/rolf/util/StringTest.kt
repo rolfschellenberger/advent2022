@@ -20,4 +20,14 @@ class StringTest {
         val joined = joinSideBySide(listOf(a, b))
         assertEquals("123 456\n789 ABC\n    DEF", joined)
     }
+
+    @Test
+    fun testCharacterCounts() {
+        val string = "abcefkfkfooooapppruiooolll"
+        val map = getCharacterCounts(string)
+        assertEquals(3, map.size)
+        assertEquals(listOf('a', 'b', 'c', 'e', 'f', 'k', 'f', 'k', 'f', 'a', 'r', 'u', 'i'), map[1])
+        assertEquals(listOf('p', 'o', 'l'), map[3])
+        assertEquals(listOf('o'), map[4])
+    }
 }
