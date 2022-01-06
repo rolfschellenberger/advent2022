@@ -292,12 +292,13 @@ open class MatrixString(input: MutableList<MutableList<String>>) : Matrix<String
 
 open class MatrixInt(input: MutableList<MutableList<Int>>) : Matrix<Int>(input) {
 
-    fun shortestPath(from: Point, to: Point, diagonal: Boolean = false): Int {
+    fun shortestPath(from: Point, to: Point, diagonal: Boolean = false, prioritizeByDistance: Boolean = false): Int {
         // Start from 0 at the starting point
         set(from, 0)
 
         val compareBySteps: Comparator<Pair<Int, Point>> = compareBy { it.first }
-        val priorityQueue = PriorityQueue(compareBySteps)
+        val compareByDistanceToEnd: Comparator<Pair<Int, Point>> = compareBy { it.second.distance(to) }
+        val priorityQueue = PriorityQueue(if (prioritizeByDistance) compareByDistanceToEnd else compareBySteps)
         priorityQueue.add(get(from) to from)
 
         while (priorityQueue.isNotEmpty()) {
