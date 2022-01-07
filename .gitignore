@@ -7,6 +7,7 @@ data
 .settings/
 .idea/
 .DS_Store
+dayXX
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
