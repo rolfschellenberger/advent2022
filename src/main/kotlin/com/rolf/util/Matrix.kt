@@ -301,24 +301,26 @@ open class MatrixInt(input: MutableList<MutableList<Int>>) : Matrix<Int>(input) 
         val priorityQueue = PriorityQueue(if (prioritizeByDistance) compareByDistanceToEnd else compareBySteps)
         priorityQueue.add(get(from) to from)
 
+        var result = Int.MAX_VALUE
         while (priorityQueue.isNotEmpty()) {
             val next = priorityQueue.remove()
             val minSteps = next.first
             val location = next.second
 
             if (location == to) {
-                return minSteps
+                result = minOf(result, minSteps)
             }
-
-            // Push the neighbours to the steps queue
-            for (neighbour in getNeighbours(location, diagonal = diagonal)) {
-                if (get(neighbour) > minSteps) {
-                    set(neighbour, minSteps + 1)
-                    priorityQueue.add(minSteps + 1 to neighbour)
+            else if (minSteps < result) {
+                // Push the neighbours to the steps queue
+                for (neighbour in getNeighbours(location, diagonal = diagonal)) {
+                    if (get(neighbour) > minSteps) {
+                        set(neighbour, minSteps + 1)
+                        priorityQueue.add(minSteps + 1 to neighbour)
+                    }
                 }
             }
         }
-        throw Exception("No shortest path found")
+        return result
     }
 
     companion object {

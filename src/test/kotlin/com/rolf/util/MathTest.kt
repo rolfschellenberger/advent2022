@@ -3,7 +3,7 @@ package com.rolf.util
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-class MathKtTest {
+class MathTest {
 
     @Test
     fun testFactorial() {

@@ -432,11 +432,6 @@ class MatrixTest {
         // 2,6 closing path
         val path3 = MatrixInt.buildForShortestPath(maze, "#")
         path3.set(2, 6, Int.MIN_VALUE)
-        try {
-            path3.shortestPath(start, end)
-            fail("Expected not to find a shortest path")
-        } catch (e: Exception) {
-            assertEquals("No shortest path found", e.message)
-        }
+        assertEquals(Int.MAX_VALUE, path3.shortestPath(start, end))
     }
 }
