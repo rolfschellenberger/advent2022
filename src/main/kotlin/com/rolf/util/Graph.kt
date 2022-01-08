@@ -54,6 +54,30 @@ open class Graph<T> {
         return edges.flatMap { it.value }
     }
 
+    fun getRootVertex(): Vertex<T>? {
+        val roots = vertices().map { it.id }.toMutableSet()
+        for (vertex in vertices()) {
+            for (edge in edges(vertex.id)) {
+                roots.remove(edge.destination)
+            }
+        }
+        if (roots.size != 1) {
+            return null
+        }
+        return getVertex(roots.first())
+    }
+
+    fun getWeight(id: String, includeEdges: Boolean = false): Double {
+        var weight = getVertex(id)!!.weight
+        for (edge in edges(id)) {
+            if (includeEdges) {
+                weight += edge.weight
+            }
+            weight += getWeight(edge.destination, includeEdges)
+        }
+        return weight
+    }
+
     fun shortestPathAndWeight(source: String, destination: String): Pair<List<String>, Double> {
         return dijkstra(source, destination)
     }

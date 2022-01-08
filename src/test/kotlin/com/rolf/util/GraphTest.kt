@@ -71,6 +71,39 @@ class GraphTest {
     }
 
     @Test
+    fun testGetRootVertex() {
+        graph.addVertex(Vertex("a"))
+        graph.addVertex(Vertex("b"))
+        graph.addVertex(Vertex("c"))
+        assertNull(graph.getRootVertex())
+
+        graph.addEdge("a", "b")
+        assertNull(graph.getRootVertex())
+
+        graph.addEdge("a", "c")
+        assertEquals("a", graph.getRootVertex()?.id)
+    }
+
+    @Test
+    fun testGetWeight() {
+        graph.addVertex(Vertex("a"))
+        graph.addVertex(Vertex("b", weight = 3.0))
+        graph.addVertex(Vertex("c"))
+        graph.addVertex(Vertex("d", weight = 4.0))
+        graph.addEdge("a", "b", weight = 5.0)
+        graph.addEdge("a", "c", weight = 7.0)
+        graph.addEdge("c", "d")
+        assertEquals(7.0, graph.getWeight("a", false), 0.0)
+        assertEquals(20.0, graph.getWeight("a", true), 0.0)
+        assertEquals(3.0, graph.getWeight("b", false), 0.0)
+        assertEquals(3.0, graph.getWeight("b", true), 0.0)
+        assertEquals(4.0, graph.getWeight("c", false), 0.0)
+        assertEquals(5.0, graph.getWeight("c", true), 0.0)
+        assertEquals(4.0, graph.getWeight("d", false), 0.0)
+        assertEquals(4.0, graph.getWeight("d", true), 0.0)
+    }
+
+    @Test
     fun testPathAndWeight() {
         graph.addVertex(Vertex("a"))
         graph.addVertex(Vertex("b"))
