@@ -67,8 +67,8 @@ open class Binary(var value: Long, val bits: Int = 16) {
         return string
     }
 
-    fun copy(): Binary {
-        return Binary(value, bits)
+    fun copy(newBits: Int = bits): Binary {
+        return Binary(value, newBits)
     }
 
     override fun toString(): String {
@@ -101,6 +101,22 @@ open class Binary(var value: Long, val bits: Int = 16) {
             value and (1L shl index).inv()
         }
         value = mask(v)
+    }
+
+    operator fun plus(increment: Binary): Binary {
+        return Binary(value + increment.value, bits)
+    }
+
+    operator fun minus(decrement: Binary): Binary {
+        return Binary(value - decrement.value, bits)
+    }
+
+    operator fun times(factor: Binary): Binary {
+        return Binary(value * factor.value, bits)
+    }
+
+    operator fun div(factor: Binary): Binary {
+        return Binary(value / factor.value, bits)
     }
 
     companion object {

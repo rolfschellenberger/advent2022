@@ -117,6 +117,10 @@ class BinaryTest {
         assertNotEquals(a, b)
         assertNotEquals(b, c)
         assertEquals(a, c)
+
+        val d = Binary("10101100")
+        val e = d.copy(4)
+        assertEquals("1100", e.toString(true))
     }
 
     @Test
@@ -154,5 +158,28 @@ class BinaryTest {
         assertEquals("11110000", a.toString())
         a[15] = true
         assertEquals("1000000011110000", a.toString())
+    }
+
+    @Test
+    fun testPlus() {
+        assertEquals(Binary("1000"), Binary(5) + Binary(3))
+        assertEquals(Binary("11"), Binary(5) + Binary(-2))
+    }
+
+    @Test
+    fun testMinus() {
+        assertEquals(Binary("10"), Binary(5) - Binary(3))
+        assertEquals(Binary("111"), Binary(5) - Binary(-2))
+    }
+
+    @Test
+    fun testTimes() {
+        assertEquals(Binary("1111"), Binary(5) * Binary(3))
+    }
+
+    @Test
+    fun testDiv() {
+        assertEquals(Binary("1"), Binary(5) / Binary(3))
+        assertEquals(Binary("101"), Binary(15) / Binary(3))
     }
 }
