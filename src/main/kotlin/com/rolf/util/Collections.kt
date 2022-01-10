@@ -1,5 +1,46 @@
 package com.rolf.util
 
+fun IntArray.swap(a: Int, b: Int): IntArray {
+    val tmp = this[a]
+    this[a] = this[b]
+    this[b] = tmp
+    return this
+}
+
+fun IntArray.pushLeft(steps: Int): IntArray {
+    return pushRight(size - (steps % size))
+}
+
+fun IntArray.pushRight(steps: Int): IntArray {
+    val result = takeLast(steps % size) + dropLast(steps % size)
+    for ((index, r) in result.withIndex()) {
+        set(index, r)
+    }
+    return this
+}
+
+fun CharArray.swap(a: Int, b: Int): CharArray {
+    val tmp = this[a]
+    this[a] = this[b]
+    this[b] = tmp
+    return this
+}
+
+fun CharArray.swap(a: Char, b: Char): CharArray {
+    return swap(indexOf(a), indexOf(b))
+}
+
+fun CharArray.pushLeft(steps: Int): CharArray {
+    return pushRight(size - (steps % size))
+}
+
+fun CharArray.pushRight(steps: Int): CharArray {
+    val result = takeLast(steps % size) + dropLast(steps % size)
+    for ((index, r) in result.withIndex()) {
+        set(index, r)
+    }
+    return this
+}
 
 /**
  * options: [a, b, c]

@@ -145,4 +145,50 @@ class CollectionsTest {
             ), results
         )
     }
+
+    @Test
+    fun testIntArraySwap() {
+        val a = IntArray(5) { i -> i }
+        assertEquals("01234", a.joinToString(""))
+        a.swap(1, 4)
+        assertEquals("04231", a.joinToString(""))
+        a.swap(2, 4)
+        assertEquals("04132", a.joinToString(""))
+    }
+
+    @Test
+    fun testCharArraySwap() {
+        val a = ('a'..'e').toList().toCharArray()
+        assertEquals("abcde", a.joinToString(""))
+        a.swap(1, 4)
+        assertEquals("aecdb", a.joinToString(""))
+        a.swap(2, 4)
+        assertEquals("aebdc", a.joinToString(""))
+        a.swap('a', 'b')
+        assertEquals("beadc", a.joinToString(""))
+    }
+
+    @Test
+    fun testIntArrayPushLeftRight() {
+        val a = IntArray(5) { i -> i }
+        assertEquals("01234", a.joinToString(""))
+        a.pushRight(3)
+        assertEquals("23401", a.joinToString(""))
+        a.pushRight(13)
+        assertEquals("40123", a.joinToString(""))
+        a.pushLeft(14)
+        assertEquals("34012", a.joinToString(""))
+    }
+
+    @Test
+    fun testCharArrayPushLeftRight() {
+        val a = ('a'..'e').toList().toCharArray()
+        assertEquals("abcde", a.joinToString(""))
+        a.pushRight(3)
+        assertEquals("cdeab", a.joinToString(""))
+        a.pushRight(13)
+        assertEquals("eabcd", a.joinToString(""))
+        a.pushLeft(14)
+        assertEquals("deabc", a.joinToString(""))
+    }
 }
