@@ -393,6 +393,29 @@ class MatrixTest {
     }
 
     @Test
+    fun testFlip() {
+        matrix.cutOut(Point(0, 0), Point(9, 9))
+        matrix.set(matrix.topLeft(), "A")
+        matrix.set(matrix.topRight(), "B")
+        matrix.set(matrix.bottomLeft(), "C")
+        matrix.set(matrix.bottomRight(), "D")
+
+        matrix.flip()
+
+        assertEquals("B", matrix.get(matrix.topLeft()))
+        assertEquals("A", matrix.get(matrix.topRight()))
+        assertEquals("D", matrix.get(matrix.bottomLeft()))
+        assertEquals("C", matrix.get(matrix.bottomRight()))
+
+        matrix.flip(horizontal = false)
+
+        assertEquals("D", matrix.get(matrix.topLeft()))
+        assertEquals("C", matrix.get(matrix.topRight()))
+        assertEquals("B", matrix.get(matrix.bottomLeft()))
+        assertEquals("A", matrix.get(matrix.bottomRight()))
+    }
+
+    @Test
     fun testCopy() {
         val a = MatrixInt.buildDefault(4, 4, 0)
         a.set(3, 3, 3)
@@ -400,6 +423,16 @@ class MatrixTest {
         a.set(1, 1, 1)
         assertEquals(3, b.get(3, 3))
         assertEquals(0, b.get(1, 1))
+    }
+
+    @Test
+    fun testEquals() {
+        val a = MatrixInt.buildDefault(3, 3, 0)
+        val b = MatrixInt.buildDefault(3, 3, 1)
+        assertFalse(a == b)
+
+        b.replace(mapOf(1 to 0))
+        assertTrue(a == b)
     }
 
     @Test

@@ -240,7 +240,25 @@ open class Matrix<T>(internal val input: MutableList<MutableList<T>>) {
         input.addAll(rows)
     }
 
-    fun copy(): Matrix<T> {
+    fun flip(horizontal: Boolean = true) {
+        val copy = copy()
+
+        if (horizontal) {
+            for (y in 0 until height()) {
+                for (x in 0 until width()) {
+                    set(x, y, copy.get(width() - x - 1, y))
+                }
+            }
+        } else {
+            for (y in 0 until height()) {
+                for (x in 0 until width()) {
+                    set(x, y, copy.get(x, height() - y - 1))
+                }
+            }
+        }
+    }
+
+    open fun copy(): Matrix<T> {
         val inputCopy = input.map { it -> it.map { it }.toMutableList() }.toMutableList()
         return Matrix(inputCopy)
     }
@@ -263,6 +281,21 @@ open class Matrix<T>(internal val input: MutableList<MutableList<T>>) {
         return toString("", "\n")
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Matrix<*>
+
+        if (input != other.input) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return input.hashCode()
+    }
+
     companion object {
         fun <T> buildDefault(width: Int, height: Int, defaultValue: T): Matrix<T> {
             val rows = mutableListOf<MutableList<T>>()
@@ -279,6 +312,11 @@ open class Matrix<T>(internal val input: MutableList<MutableList<T>>) {
 }
 
 open class MatrixString(input: MutableList<MutableList<String>>) : Matrix<String>(input) {
+
+    override fun copy(): MatrixString {
+        return MatrixString(super.copy().input)
+    }
+
     companion object {
         fun buildDefault(width: Int, height: Int, defaultValue: String): MatrixString {
             return MatrixString(Matrix.buildDefault(width, height, defaultValue).input)
@@ -309,8 +347,7 @@ open class MatrixInt(input: MutableList<MutableList<Int>>) : Matrix<Int>(input) 
 
             if (location == to) {
                 result = minOf(result, minSteps)
-            }
-            else if (minSteps < result) {
+            } else if (minSteps < result) {
                 // Push the neighbours to the steps queue
                 for (neighbour in getNeighbours(location, diagonal = diagonal)) {
                     if (get(neighbour) > minSteps) {
@@ -321,6 +358,10 @@ open class MatrixInt(input: MutableList<MutableList<Int>>) : Matrix<Int>(input) 
             }
         }
         return result
+    }
+
+    override fun copy(): MatrixInt {
+        return MatrixInt(super.copy().input)
     }
 
     companion object {
@@ -348,6 +389,11 @@ open class MatrixInt(input: MutableList<MutableList<Int>>) : Matrix<Int>(input) 
 }
 
 open class MatrixLong(input: MutableList<MutableList<Long>>) : Matrix<Long>(input) {
+
+    override fun copy(): MatrixLong {
+        return MatrixLong(super.copy().input)
+    }
+
     companion object {
         fun buildDefault(width: Int, height: Int, defaultValue: Long): MatrixLong {
             return MatrixLong(Matrix.buildDefault(width, height, defaultValue).input)
