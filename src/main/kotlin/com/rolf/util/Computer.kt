@@ -22,7 +22,7 @@ abstract class Computer(val instructions: List<Instruction>, var pointer: Int = 
     }
 
     fun execute() {
-        while (pointer < instructions.size) {
+        while (!isDone()) {
             executeNext()
             if (shouldStop) {
                 return
