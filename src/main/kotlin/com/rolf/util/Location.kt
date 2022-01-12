@@ -1,5 +1,6 @@
 package com.rolf.util
 
+import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.round
 import kotlin.math.sin
@@ -25,6 +26,10 @@ open class Location(val x: Int, val y: Int, val z: Int) : Comparable<Location> {
         val x1 = round(x * cos(radians) - y * sin(radians)).toInt()
         val y1 = round(x * sin(radians) + y * cos(radians)).toInt()
         return Location(x1, y1, z)
+    }
+
+    fun distance(other: Location): Long {
+        return 0L + abs(x - other.x) + abs(y - other.y) + abs(z - other.z)
     }
 
     override fun compareTo(other: Location): Int {
