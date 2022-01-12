@@ -33,4 +33,11 @@ class MathTest {
         assertTrue((-7).isOdd())
         assertTrue(2342352355529.isOdd())
     }
+
+    @Test
+    fun testIsPrime() {
+        assertFalse(4.isPrime())
+        assertTrue(7.isPrime())
+        assertTrue(999999000001.isPrime())
+    }
 }
