@@ -78,6 +78,24 @@ open class Graph<T> {
         return weight
     }
 
+    fun getPathsFrom(source: String, visited: Set<String> = emptySet()): List<List<String>> {
+        val result: MutableList<List<String>> = mutableListOf()
+        val v = visited.toMutableSet()
+        v.add(source)
+        for (edge in edges(source)) {
+            if (!v.contains(edge.destination)) {
+                val paths = getPathsFrom(edge.destination, v)
+                for (path in paths) {
+                    result.add(listOf(source) + path)
+                }
+            }
+        }
+        if (result.isEmpty()) {
+            result.add(listOf(source))
+        }
+        return result
+    }
+
     fun shortestPathAndWeight(source: String, destination: String): Pair<List<String>, Double> {
         return dijkstra(source, destination)
     }

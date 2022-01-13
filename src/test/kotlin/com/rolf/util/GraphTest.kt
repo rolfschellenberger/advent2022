@@ -104,6 +104,32 @@ class GraphTest {
     }
 
     @Test
+    fun testFindPathsFrom() {
+        graph.addVertex(Vertex("a"))
+        graph.addVertex(Vertex("ab"))
+        graph.addVertex(Vertex("ac"))
+        graph.addEdge("a", "ab", edgeType = EdgeType.UNDIRECTED)
+        graph.addEdge("a", "ac")
+
+        assertEquals(
+            listOf(
+                listOf("a", "ab"),
+                listOf("a", "ac")
+            ), graph.getPathsFrom("a")
+        )
+        assertEquals(
+            listOf(
+                listOf("ac")
+            ), graph.getPathsFrom("ac")
+        )
+        assertEquals(
+            listOf(
+                listOf("ab", "a", "ac")
+            ), graph.getPathsFrom("ab")
+        )
+    }
+
+    @Test
     fun testPathAndWeight() {
         graph.addVertex(Vertex("a"))
         graph.addVertex(Vertex("b"))
