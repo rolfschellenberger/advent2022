@@ -113,6 +113,23 @@ class MatrixTest {
     }
 
     @Test
+    fun testEdges() {
+        matrix.set(matrix.topLeft(), "A")
+        matrix.set(matrix.topRight(), "B")
+        matrix.set(matrix.bottomLeft(), "C")
+        matrix.set(matrix.bottomRight(), "D")
+
+        assertEquals("A", matrix.getTopEdge().first())
+        assertEquals("B", matrix.getTopEdge().last())
+        assertEquals("C", matrix.getBottomEdge().first())
+        assertEquals("D", matrix.getBottomEdge().last())
+        assertEquals("A", matrix.getLeftEdge().first())
+        assertEquals("C", matrix.getLeftEdge().last())
+        assertEquals("B", matrix.getRightEdge().first())
+        assertEquals("D", matrix.getRightEdge().last())
+    }
+
+    @Test
     fun testGetSetCount() {
         assertEquals(200, matrix.count("."))
         assertEquals(0, matrix.count("A"))

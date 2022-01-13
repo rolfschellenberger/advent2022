@@ -69,6 +69,22 @@ open class Matrix<T>(internal val input: MutableList<MutableList<T>>) {
         return input[y].toList()
     }
 
+    fun getTopEdge(): List<T> {
+        return getRow(0)
+    }
+
+    fun getBottomEdge(): List<T> {
+        return getRow(height() - 1)
+    }
+
+    fun getLeftEdge(): List<T> {
+        return getColumn(0)
+    }
+
+    fun getRightEdge(): List<T> {
+        return getColumn(width() - 1)
+    }
+
     fun get(x: Int, y: Int): T {
         return input[y][x]
     }
