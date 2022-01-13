@@ -30,4 +30,25 @@ class StringTest {
         assertEquals(listOf('p', 'o', 'l'), map[3])
         assertEquals(listOf('o'), map[4])
     }
+
+    @Test
+    fun testCharacterCountsNotInOrder() {
+        val string = "abcefkfkfooooapppruiooolll"
+        val map = getCharacterCounts(string, inOrder = false)
+        assertEquals(4, map.size)
+        assertEquals(listOf('b', 'c', 'e', 'i', 'r', 'u'), map[1])
+        assertEquals(listOf('a', 'k'), map[2])
+        assertEquals(listOf('f', 'l', 'p'), map[3])
+        assertEquals(listOf('o'), map[7])
+    }
+
+    @Test
+    fun testCharacterCountsUnique() {
+        val string = "abcefkfkfooooapppruiooolll"
+        val map = getCharacterCounts(string, uniqueChars = true)
+        assertEquals(3, map.size)
+        assertEquals(listOf('a', 'b', 'c', 'e', 'f', 'k', 'r', 'u', 'i'), map[1])
+        assertEquals(listOf('p', 'o', 'l'), map[3])
+        assertEquals(listOf('o'), map[4])
+    }
 }
