@@ -1,5 +1,9 @@
 package com.rolf.util
 
+import java.util.*
+import kotlin.collections.ArrayDeque
+import kotlin.math.absoluteValue
+
 fun IntArray.swap(a: Int, b: Int): IntArray {
     val tmp = this[a]
     this[a] = this[b]
@@ -40,6 +44,17 @@ fun CharArray.pushRight(steps: Int): CharArray {
         set(index, r)
     }
     return this
+}
+
+fun <T> ArrayDeque<T>.shift(n: Int) {
+    when {
+        n < 0 -> repeat(n.absoluteValue % size) {
+            addLast(removeFirst())
+        }
+        else -> repeat(n % size) {
+            addFirst(removeLast())
+        }
+    }
 }
 
 /**

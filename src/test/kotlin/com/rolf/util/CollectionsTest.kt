@@ -191,4 +191,13 @@ class CollectionsTest {
         a.pushLeft(14)
         assertEquals("deabc", a.joinToString(""))
     }
+
+    @Test
+    fun testDeQueueShift() {
+        val dequeue = ArrayDeque(listOf(1, 2, 3, 4, 5))
+        dequeue.shift(-1)
+        assertEquals(listOf(2, 3, 4, 5, 1), dequeue.toList())
+        dequeue.shift(13)
+        assertEquals(listOf(4, 5, 1, 2, 3), dequeue.toList())
+    }
 }
