@@ -237,6 +237,17 @@ class MatrixTest {
     }
 
     @Test
+    fun testSubMatrix() {
+        matrix.set(3, 4, "B")
+        matrix.set(5, 5, "C")
+        val sub = matrix.subMatrix(Point(3, 4), Point(5, 5))
+        assertEquals(3, sub.width())
+        assertEquals(2, sub.height())
+        assertEquals("B", sub.get(sub.topLeft()))
+        assertEquals("C", sub.get(sub.bottomRight()))
+    }
+
+    @Test
     fun testCutOut() {
         matrix.set(3, 4, "B")
         matrix.set(5, 5, "C")

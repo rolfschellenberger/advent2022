@@ -211,7 +211,7 @@ open class Matrix<T>(internal val input: MutableList<MutableList<T>>) {
         }
     }
 
-    fun cutOut(topLeftInclusive: Point, bottomRightInclusive: Point) {
+    fun subMatrix(topLeftInclusive: Point, bottomRightInclusive: Point): Matrix<T> {
         val rows = mutableListOf<MutableList<T>>()
         for (y in topLeftInclusive.y..bottomRightInclusive.y) {
             val row = mutableListOf<T>()
@@ -220,8 +220,13 @@ open class Matrix<T>(internal val input: MutableList<MutableList<T>>) {
             }
             rows.add(row)
         }
+        return Matrix(rows)
+    }
+
+    fun cutOut(topLeftInclusive: Point, bottomRightInclusive: Point) {
+        val sub = subMatrix(topLeftInclusive, bottomRightInclusive)
         input.clear()
-        input.addAll(rows)
+        input.addAll(sub.input)
     }
 
     fun grow(left: Int, right: Int, top: Int, bottom: Int, defaultValue: T) {
