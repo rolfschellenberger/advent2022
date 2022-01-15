@@ -57,6 +57,11 @@ fun <T> ArrayDeque<T>.shift(n: Int) {
     }
 }
 
+fun List<*>.endsWith(other: List<*>): Boolean {
+    return if (this.size < other.size) false
+    else this.slice(this.size - other.size until this.size) == other
+}
+
 /**
  * options: [a, b, c]
  * return: [[a, b, c], [a, c, b], [b, a, c], [b, c, a], [c, a, b], [c, b, a]]

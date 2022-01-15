@@ -1,6 +1,6 @@
 package com.rolf.util
 
-import org.junit.Assert.assertEquals
+import org.junit.Assert.*
 import org.junit.Test
 
 class CollectionsTest {
@@ -199,5 +199,13 @@ class CollectionsTest {
         assertEquals(listOf(2, 3, 4, 5, 1), dequeue.toList())
         dequeue.shift(13)
         assertEquals(listOf(4, 5, 1, 2, 3), dequeue.toList())
+    }
+
+    @Test
+    fun testListEndsWith() {
+        val list = listOf(1, 2, 3, 4, 5, 6)
+        assertTrue(list.endsWith(listOf(4, 5, 6)))
+        assertTrue(list.endsWith(listOf(6)))
+        assertFalse(list.endsWith(listOf(4, 5, 6, 6)))
     }
 }
