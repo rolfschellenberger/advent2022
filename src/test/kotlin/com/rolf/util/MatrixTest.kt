@@ -464,7 +464,7 @@ class MatrixTest {
     }
 
     @Test
-    fun testShortestPath() {
+    fun testPath() {
         val input = """
             ..#.......
             .#........
@@ -478,21 +478,38 @@ class MatrixTest {
             ...#......
             """.trimIndent().lines()
         val maze = MatrixString.build(splitLines(input))
+        val walls = maze.find("#").toSet()
 
-        val path = MatrixInt.buildForShortestPath(maze, "#")
         val start = Point(0, 0)
         val end = Point(9, 9)
-        val distance = path.shortestPath(start, end)
-        assertEquals(26, distance)
+        val distance = maze.findPath(start, end, walls)
+        assertEquals(26, distance.size)
 
         // Diagonal test
-        val path2 = MatrixInt.buildForShortestPath(maze, "#")
-        val distance2 = path2.shortestPath(start, end, diagonal = true)
-        assertEquals(10, distance2)
+        val distance2 = maze.findPath(start, end, walls, diagonal = true)
+        assertEquals(10, distance2.size)
 
         // 2,6 closing path
-        val path3 = MatrixInt.buildForShortestPath(maze, "#")
-        path3.set(2, 6, Int.MIN_VALUE)
-        assertEquals(Int.MAX_VALUE, path3.shortestPath(start, end))
+        val notAllowed = Point(2, 6)
+        val distance3 = maze.findPath(start, end, walls + notAllowed)
+        assertTrue(distance3.isEmpty())
+
+        // Find path does not use the maze
+        maze.set(notAllowed, "#")
+        val distance4 = maze.findPath(start, end, walls)
+        assertEquals(26, distance4.size)
+        maze.set(notAllowed, ".")
+
+        // Find multiple locations
+        val end2 = Point(3, 4)
+        val distance5 = maze.findPath(start, setOf(end, end2), walls)
+        assertEquals(17, distance5.size)
+
+        // Find by ignoring the wall value
+        val distance6 = maze.findPathByValue(start, end, setOf("#"))
+        assertEquals(26, distance6.size)
+        maze.set(notAllowed, "#")
+        val distance7 = maze.findPathByValue(start, end, setOf("#"))
+        assertEquals(0, distance7.size)
     }
 }

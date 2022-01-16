@@ -1,6 +1,5 @@
 package com.rolf.util
 
-import java.util.*
 import kotlin.math.abs
 
 open class Matrix<T>(internal val input: MutableList<MutableList<T>>) {
@@ -103,6 +102,10 @@ open class Matrix<T>(internal val input: MutableList<MutableList<T>>) {
 
     fun count(value: T): Int {
         return allElements().filter { it == value }.count()
+    }
+
+    fun find(value: T): List<Point> {
+        return allPoints().filter { get(it) == value }
     }
 
     fun wrap(point: Point): Point {
@@ -279,6 +282,72 @@ open class Matrix<T>(internal val input: MutableList<MutableList<T>>) {
         }
     }
 
+    fun findPathByValue(
+        from: Point,
+        to: Point,
+        notAllowedValues: Set<T> = emptySet(),
+        diagonal: Boolean = false
+    ): List<Point> {
+        val notAllowed = notAllowedValues.map { find(it) }.flatten().toSet()
+        return findPath(from, setOf(to), notAllowed, diagonal)
+    }
+
+    fun findPath(
+        from: Point,
+        to: Point,
+        notAllowedLocations: Set<Point> = emptySet(),
+        diagonal: Boolean = false
+    ): List<Point> {
+        return findPath(from, setOf(to), notAllowedLocations, diagonal)
+    }
+
+    fun findPath(
+        from: Point,
+        to: Set<Point>,
+        notAllowedLocations: Set<Point> = emptySet(),
+        diagonal: Boolean = false
+    ): List<Point> {
+        val paths: ArrayDeque<List<Point>> = ArrayDeque()
+        val seen: MutableSet<Point> = mutableSetOf(from)
+        seen.addAll(notAllowedLocations)
+
+        // Function to filter allowed locations
+        fun isAllowed(point: Point): Boolean {
+            if (seen.contains(point)) return false
+            if (notAllowedLocations.contains(point)) return false
+            return true
+        }
+
+        fun getNeighbours(point: Point): List<Point> {
+            return getNeighbours(point, diagonal = diagonal).filter { isAllowed(it) }.sorted()
+        }
+
+        // Start with the neighbours of the starting point that are allowed to visit.
+        for (neighbour in getNeighbours(from)) {
+            paths.add(listOf(neighbour))
+        }
+
+        while (paths.isNotEmpty()) {
+            val path = paths.removeFirst()
+            val pathEnd: Point = path.last()
+
+            // Arrived at destination?
+            if (to.contains(pathEnd)) {
+                return path
+            }
+
+            // Continue only new locations
+            if (pathEnd !in seen) {
+                seen.add(pathEnd)
+
+                for (neighbour in getNeighbours(pathEnd)) {
+                    paths.add(path + neighbour)
+                }
+            }
+        }
+        return emptyList()
+    }
+
     open fun copy(): Matrix<T> {
         val inputCopy = input.map { it -> it.map { it }.toMutableList() }.toMutableList()
         return Matrix(inputCopy)
@@ -351,36 +420,6 @@ open class MatrixString(input: MutableList<MutableList<String>>) : Matrix<String
 
 open class MatrixInt(input: MutableList<MutableList<Int>>) : Matrix<Int>(input) {
 
-    fun shortestPath(from: Point, to: Point, diagonal: Boolean = false, prioritizeByDistance: Boolean = false): Int {
-        // Start from 0 at the starting point
-        set(from, 0)
-
-        val compareBySteps: Comparator<Pair<Int, Point>> = compareBy { it.first }
-        val compareByDistanceToEnd: Comparator<Pair<Int, Point>> = compareBy { it.second.distance(to) }
-        val priorityQueue = PriorityQueue(if (prioritizeByDistance) compareByDistanceToEnd else compareBySteps)
-        priorityQueue.add(get(from) to from)
-
-        var result = Int.MAX_VALUE
-        while (priorityQueue.isNotEmpty()) {
-            val next = priorityQueue.remove()
-            val minSteps = next.first
-            val location = next.second
-
-            if (location == to) {
-                result = minOf(result, minSteps)
-            } else if (minSteps < result) {
-                // Push the neighbours to the steps queue
-                for (neighbour in getNeighbours(location, diagonal = diagonal)) {
-                    if (get(neighbour) > minSteps) {
-                        set(neighbour, minSteps + 1)
-                        priorityQueue.add(minSteps + 1 to neighbour)
-                    }
-                }
-            }
-        }
-        return result
-    }
-
     override fun copy(): MatrixInt {
         return MatrixInt(super.copy().input)
     }
@@ -392,19 +431,6 @@ open class MatrixInt(input: MutableList<MutableList<Int>>) : Matrix<Int>(input) 
 
         fun build(input: List<List<String>>): MatrixInt {
             return MatrixInt(input.map { list -> list.map { it.toInt() }.toMutableList() }.toMutableList())
-        }
-
-        fun buildForShortestPath(matrix: MatrixString, wallValue: String): MatrixInt {
-            // Every field will get the maximum penalty to find the shortest path
-            val result = buildDefault(matrix.width(), matrix.height(), Int.MAX_VALUE)
-            // The wall values are going to be replaced with the lowest value, so they will not be picked during
-            // the shortest path traversal
-            for (point in matrix.allPoints()) {
-                if (matrix.get(point) == wallValue) {
-                    result.set(point, Int.MIN_VALUE)
-                }
-            }
-            return result
         }
     }
 }
