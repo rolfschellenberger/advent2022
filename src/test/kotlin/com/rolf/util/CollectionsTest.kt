@@ -208,4 +208,22 @@ class CollectionsTest {
         assertTrue(list.endsWith(listOf(6)))
         assertFalse(list.endsWith(listOf(4, 5, 6, 6)))
     }
+
+    @Test
+    fun testFindPairs() {
+        val options = mapOf(
+            0 to setOf("a", "b"),
+            1 to setOf("b"),
+            2 to setOf("b", "c"),
+            3 to setOf("a", "c", "d")
+        )
+        val pairs = findPairs(options)
+        val expected = mapOf(
+            0 to "a",
+            1 to "b",
+            2 to "c",
+            3 to "d",
+        )
+        assertEquals(expected, pairs)
+    }
 }

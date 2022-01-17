@@ -48,10 +48,10 @@ fun CharArray.pushRight(steps: Int): CharArray {
 
 fun <T> ArrayDeque<T>.shift(n: Int) {
     when {
-        n < 0 -> repeat(n.absoluteValue % size) {
+        n < 0 -> repeat(n.absoluteValue) {
             addLast(removeFirst())
         }
-        else -> repeat(n % size) {
+        else -> repeat(n) {
             addFirst(removeLast())
         }
     }
@@ -154,4 +154,46 @@ fun <T> getCombinations(
     if (prefix.isNotEmpty()) {
         onNextCombination(prefix)
     }
+}
+
+fun <T, U> findPairs(input: Map<T, Set<U>>): Map<T, U> {
+    // Create mutable options to distribute
+    val options = input.map { it.key to it.value.toMutableList() }.toMap().toMutableMap()
+    val result = mutableMapOf<T, U>()
+
+    var lastSize = -1
+    while (result.size != lastSize) {
+        lastSize = result.size
+        options.filter { it.value.size == 1 }.forEach { result[it.key] = it.value.first() }
+
+        // Any unique values found?
+        val valueCounts = options.values.flatten().groupingBy { it }.eachCount()
+        val singleValues = valueCounts.filter { it.value == 1 }.map { it.key }
+        for (option in options) {
+            for (singleValue in singleValues) {
+                if (option.value.contains(singleValue)) {
+                    result[option.key] = singleValue
+                }
+            }
+        }
+
+        // Remove all found options
+        for (element in result) {
+            options.remove(element.key)
+            for (option in options) {
+                option.value.remove(element.value)
+            }
+        }
+
+        // Last option remaining?
+        if (options.size == 1) {
+            val key = options.keys.first()
+            if (options[key]!!.isEmpty()) {
+                val value = (input.values.flatten().toSet() - result.values).first()
+                result[key] = value
+            }
+        }
+    }
+    if (result.size != input.size) throw Exception("No matching was possible")
+    return result
 }
