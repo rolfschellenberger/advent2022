@@ -101,7 +101,11 @@ open class Matrix<T>(internal val input: MutableList<MutableList<T>>) {
     }
 
     fun count(value: T): Int {
-        return allElements().filter { it == value }.count()
+        return count(setOf(value))
+    }
+
+    fun count(values: Set<T>): Int {
+        return allElements().filter { it in values }.count()
     }
 
     fun find(value: T): List<Point> {

@@ -148,6 +148,7 @@ class MatrixTest {
         assertEquals(0, matrix.count("A"))
         assertEquals(1, matrix.count("B"))
         assertEquals(1, matrix.count("C"))
+        assertEquals(2, matrix.count(setOf("A", "B", "C")))
     }
 
     @Test
