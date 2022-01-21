@@ -71,6 +71,22 @@ class GraphTest {
     }
 
     @Test
+    fun testNeighbours() {
+        graph.addVertex(Vertex("a"))
+        graph.addVertex(Vertex("b"))
+        graph.addVertex(Vertex("c"))
+        graph.addVertex(Vertex("d"))
+        graph.addEdge("a", "b")
+        graph.addEdge("a", "c")
+        graph.addEdge("a", "d")
+        graph.addEdge("b", "d")
+        assertEquals(setOf("b", "c", "d"), graph.neighbours("a"))
+        assertEquals(setOf("d"), graph.neighbours("b"))
+        assertEquals(emptySet<String>(), graph.neighbours("c"))
+        assertEquals(emptySet<String>(), graph.neighbours("d"))
+    }
+
+    @Test
     fun testGetRootVertex() {
         graph.addVertex(Vertex("a"))
         graph.addVertex(Vertex("b"))
@@ -263,5 +279,33 @@ class GraphTest {
         val (path5, weight5) = graph.highestPathAndWeightVisitAll()
         assertEquals(listOf("a", "c", "e", "d", "b"), path5)
         assertEquals(7.0, weight5, 0.0)
+    }
+
+    @Test
+    fun testLargestCliques() {
+        // Example graph of https://en.wikipedia.org/wiki/Bron%E2%80%93Kerbosch_algorithm
+        graph.addVertex(Vertex("1"))
+        graph.addVertex(Vertex("2"))
+        graph.addVertex(Vertex("3"))
+        graph.addVertex(Vertex("4"))
+        graph.addVertex(Vertex("5"))
+        graph.addVertex(Vertex("6"))
+        graph.addEdge("1", "2", EdgeType.UNDIRECTED)
+        graph.addEdge("1", "5", EdgeType.UNDIRECTED)
+        graph.addEdge("2", "3", EdgeType.UNDIRECTED)
+        graph.addEdge("2", "5", EdgeType.UNDIRECTED)
+        graph.addEdge("3", "4", EdgeType.UNDIRECTED)
+        graph.addEdge("4", "5", EdgeType.UNDIRECTED)
+        graph.addEdge("4", "6", EdgeType.UNDIRECTED)
+        assertEquals(listOf(setOf("1", "2", "5")), graph.largestCliques())
+
+        graph.addEdge("3", "5", EdgeType.UNDIRECTED)
+        assertEquals(
+            listOf(
+                setOf("1", "2", "5"),
+                setOf("2", "3", "5"),
+                setOf("3", "4", "5")
+            ), graph.largestCliques()
+        )
     }
 }

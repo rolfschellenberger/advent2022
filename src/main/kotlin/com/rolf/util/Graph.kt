@@ -54,6 +54,10 @@ open class Graph<T> {
         return edges.flatMap { it.value }
     }
 
+    fun neighbours(source: String): Set<String> {
+        return edges(source).map { it.destination }.toSet()
+    }
+
     fun getRootVertex(): Vertex<T>? {
         val roots = vertices().map { it.id }.toMutableSet()
         for (vertex in vertices()) {
@@ -315,6 +319,51 @@ open class Graph<T> {
         }
 
         return path to maxCost
+    }
+
+    // https://en.wikipedia.org/wiki/Bron%E2%80%93Kerbosch_algorithm
+    fun largestCliques(): List<Set<String>> {
+        // Find the neighbours for each vertex
+        val neighbours: MutableMap<String, Set<String>> = mutableMapOf()
+        for (vertex in vertices()) {
+            neighbours[vertex.id] = neighbours(vertex.id)
+        }
+
+        // Find all cliques of vertices that are connected
+        val cliques: MutableMap<Int, MutableList<Set<String>>> = mutableMapOf()
+        findCliques(cliques, neighbours, neighbours.keys)
+
+        // Return the largest set of cliques
+        val maxClique = cliques.maxByOrNull { it.key } ?: return emptyList()
+        return maxClique.value
+    }
+
+    private fun findCliques(
+        cliques: MutableMap<Int, MutableList<Set<String>>>,
+        neighbours: Map<String, Set<String>>,
+        p: Set<String>,
+        r: Set<String> = emptySet(),
+        x: Set<String> = emptySet()
+    ) {
+        if (p.isEmpty() && x.isEmpty()) {
+            // We have found a clique. Add it to the list matching the clique size.
+            val list = cliques.computeIfAbsent(r.size) { mutableListOf() }
+            // Adding the vertices sorted, perhaps this is a too high performance penalty?
+            list.add(r.sorted().toSet())
+        } else {
+            val mostNeighborsOfPandX: String = (p + x).maxByOrNull { neighbours.getValue(it).size }!!
+            val pWithoutNeighbors = p.minus(neighbours[mostNeighborsOfPandX]!!)
+            pWithoutNeighbors.forEach { v ->
+                val neighborsOfV = neighbours[v]!!
+                findCliques(
+                    cliques,
+                    neighbours,
+                    p.intersect(neighborsOfV),
+                    r + v,
+                    x.intersect(neighborsOfV)
+                )
+            }
+        }
     }
 }
 
