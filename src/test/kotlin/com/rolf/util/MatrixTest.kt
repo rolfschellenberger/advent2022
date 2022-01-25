@@ -130,6 +130,15 @@ class MatrixTest {
     }
 
     @Test
+    fun testCenter() {
+        val m1 = MatrixString.buildDefault(5, 5, ".")
+        assertEquals(Point(2, 2), m1.center())
+
+        val m2 = MatrixString.buildDefault(10, 10, ".")
+        assertEquals(Point(5, 5), m2.center())
+    }
+
+    @Test
     fun testGetSetCount() {
         assertEquals(200, matrix.count("."))
         assertEquals(0, matrix.count("A"))
@@ -224,6 +233,18 @@ class MatrixTest {
     }
 
     @Test
+    fun testGetAllDirections() {
+        val m1 = MatrixString.buildDefault(10, 10, ".")
+        val directions1 = m1.getAllDirections(m1.center())
+        assertEquals(64, directions1.size)
+
+        val m2 = MatrixString.buildDefault(5, 5, ".")
+        val directions2 = m2.getAllDirections(Point(3, 4))
+        assertTrue(directions2.contains(Point(1, -4)))
+        assertEquals(16, directions2.size)
+    }
+
+    @Test
     fun testGetArea() {
         val from = Point(4, 6)
         val to = Point(8, 9)
@@ -232,9 +253,9 @@ class MatrixTest {
 
         val area = matrix.getArea(from, to)
         assertEquals(20, area.size)
-        assertEquals(1, area.filter { matrix.get(it) == "A" }.count())
-        assertEquals(1, area.filter { matrix.get(it) == "B" }.count())
-        assertEquals(18, area.filter { matrix.get(it) == "." }.count())
+        assertEquals(1, area.count { matrix.get(it) == "A" })
+        assertEquals(1, area.count { matrix.get(it) == "B" })
+        assertEquals(18, area.count { matrix.get(it) == "." })
     }
 
     @Test

@@ -26,4 +26,15 @@ class PointTest {
         val sorted = listOf(Point(1, 3), Point(1, 4), Point(3, 4))
         assertEquals(sorted, list.sorted())
     }
+
+    @Test
+    fun testAngleBetween() {
+        assertEquals(45.0, Point(3, 3).angleBetween(Point(4, 4)), 0.0)
+        assertEquals(270.0, Point(3, 3).angleBetween(Point(3, 1)), 0.0)
+        assertEquals(180.0, Point(3, 3).angleBetween(Point(1, 3)), 0.0)
+        assertEquals(0.0, Point(3, 3).angleBetween(Point(5, 3)), 0.0)
+        assertEquals(90.0, Point(3, 3).angleBetween(Point(3, 9)), 0.0)
+        assertEquals(135.0, Point(3, 3).angleBetween(Point(2, 4)), 0.0)
+        assertEquals(225.0, Point(3, 3).angleBetween(Point(2, 2)), 0.0)
+    }
 }

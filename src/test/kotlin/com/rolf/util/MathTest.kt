@@ -40,4 +40,13 @@ class MathTest {
         assertTrue(7.isPrime())
         assertTrue(999999000001.isPrime())
     }
+
+    @Test
+    fun testGreatestCommonDivisor() {
+        assertEquals(3, greatestCommonDivisor(6, 9))
+        assertEquals(6, greatestCommonDivisor(366, 60))
+        assertEquals(60, greatestCommonDivisor(360, 60))
+        assertEquals(5, greatestCommonDivisor(5, 5))
+        assertEquals(-5, greatestCommonDivisor(-5, -5))
+    }
 }

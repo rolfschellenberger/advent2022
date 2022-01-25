@@ -8,6 +8,7 @@ open class Matrix<T>(internal val input: MutableList<MutableList<T>>) {
     fun topRight() = Point(width() - 1, 0)
     fun bottomLeft() = Point(0, height() - 1)
     fun bottomRight() = Point(width() - 1, height() - 1)
+    fun center() = Point(width() / 2, height() / 2)
 
     fun allElements(): List<T> {
         return input.flatten()
@@ -105,7 +106,7 @@ open class Matrix<T>(internal val input: MutableList<MutableList<T>>) {
     }
 
     fun count(values: Set<T>): Int {
-        return allElements().filter { it in values }.count()
+        return allElements().count { it in values }
     }
 
     fun find(value: T): List<Point> {
@@ -148,6 +149,17 @@ open class Matrix<T>(internal val input: MutableList<MutableList<T>>) {
 
     fun getRightDown(point: Point, wrap: Boolean = false): Point? {
         return move(point, 1, 1, wrap)
+    }
+
+    fun getAllDirections(start: Point): List<Point> {
+        return allPoints().filterNot { it == start }.map {
+            val gcd = abs(greatestCommonDivisor(start.x - it.x, start.y - it.y))
+            Point((it.x - start.x) / gcd, (it.y - start.y) / gcd)
+        }.distinct()
+    }
+
+    fun getNextDirection(point: Point, direction: Point): Point {
+        return Point(point.x + direction.x, point.y + direction.y)
     }
 
     private fun move(point: Point, xDelta: Int, yDelta: Int, wrap: Boolean = false): Point? {

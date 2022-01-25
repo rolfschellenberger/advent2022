@@ -19,3 +19,11 @@ fun factorial(num: Int): Long {
     }
     return factorial
 }
+
+fun greatestCommonDivisor(a: Int, b: Int): Int {
+    return if (b == 0) {
+        a
+    } else {
+        greatestCommonDivisor(b, a % b)
+    }
+}
