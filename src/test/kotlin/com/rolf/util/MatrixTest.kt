@@ -233,6 +233,14 @@ class MatrixTest {
     }
 
     @Test
+    fun testGetForward() {
+        assertEquals(Point(3, 3), matrix.getForward(Point(3, 4), Direction.NORTH))
+        assertEquals(Point(4, 4), matrix.getForward(Point(3, 4), Direction.EAST))
+        assertEquals(Point(3, 5), matrix.getForward(Point(3, 4), Direction.SOUTH))
+        assertEquals(Point(2, 4), matrix.getForward(Point(3, 4), Direction.WEST))
+    }
+
+    @Test
     fun testGetAllDirections() {
         val m1 = MatrixString.buildDefault(10, 10, ".")
         val directions1 = m1.getAllDirections(m1.center())
@@ -371,6 +379,11 @@ class MatrixTest {
         assertEquals(100, matrixLong.width())
         assertEquals(100, matrixLong.height())
         assertEquals(8L, matrixLong.get(17, 7))
+
+        val intToString = MatrixString.build(matrixInt)
+        assertEquals(100, intToString.width())
+        assertEquals(100, intToString.height())
+        assertEquals("8", intToString.get(17, 7))
     }
 
     @Test

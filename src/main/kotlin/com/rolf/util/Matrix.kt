@@ -151,6 +151,15 @@ open class Matrix<T>(internal val input: MutableList<MutableList<T>>) {
         return move(point, 1, 1, wrap)
     }
 
+    fun getForward(point: Point, direction: Direction, wrap: Boolean = false): Point? {
+        return when (direction) {
+            Direction.NORTH -> getUp(point, wrap)
+            Direction.EAST -> getRight(point, wrap)
+            Direction.SOUTH -> getDown(point, wrap)
+            Direction.WEST -> getLeft(point, wrap)
+        }
+    }
+
     fun getAllDirections(start: Point): List<Point> {
         return allPoints().filterNot { it == start }.map {
             val gcd = abs(greatestCommonDivisor(start.x - it.x, start.y - it.y))
@@ -175,7 +184,7 @@ open class Matrix<T>(internal val input: MutableList<MutableList<T>>) {
         return Point(x, y)
     }
 
-    fun getNeighbours(
+    private fun getNeighbours(
         point: Point,
         horizontal: Boolean = true,
         vertical: Boolean = true,
@@ -430,6 +439,14 @@ open class MatrixString(input: MutableList<MutableList<String>>) : Matrix<String
 
         fun build(input: List<List<String>>): MatrixString {
             return MatrixString(input.map { it.toMutableList() }.toMutableList())
+        }
+
+        fun build(other: Matrix<*>): MatrixString {
+            val output = buildDefault(other.width(), other.height(), " ")
+            for (point in other.allPoints()) {
+                output.set(point, other.get(point).toString())
+            }
+            return output
         }
     }
 }
