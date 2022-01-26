@@ -21,9 +21,17 @@ fun factorial(num: Int): Long {
 }
 
 fun greatestCommonDivisor(a: Int, b: Int): Int {
-    return if (b == 0) {
+    return greatestCommonDivisor(a.toLong(), b.toLong()).toInt()
+}
+
+fun greatestCommonDivisor(a: Long, b: Long): Long {
+    return if (b == 0L) {
         a
     } else {
         greatestCommonDivisor(b, a % b)
     }
+}
+
+fun leastCommonMultiple(a: Long, b: Long): Long {
+    return (a * b) / greatestCommonDivisor(a, b)
 }

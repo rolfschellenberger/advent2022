@@ -49,4 +49,10 @@ class MathTest {
         assertEquals(5, greatestCommonDivisor(5, 5))
         assertEquals(-5, greatestCommonDivisor(-5, -5))
     }
+
+    @Test
+    fun testLeastCommonMultiple() {
+        assertEquals(273, leastCommonMultiple(13, 21))
+        assertEquals(360, leastCommonMultiple(120, 90))
+    }
 }
