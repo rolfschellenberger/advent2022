@@ -184,7 +184,7 @@ open class Matrix<T>(internal val input: MutableList<MutableList<T>>) {
         return Point(x, y)
     }
 
-    private fun getNeighbours(
+    fun getNeighbours(
         point: Point,
         horizontal: Boolean = true,
         vertical: Boolean = true,
