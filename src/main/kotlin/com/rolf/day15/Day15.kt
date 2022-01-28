@@ -3,10 +3,10 @@ package com.rolf.day15
 import com.rolf.Day
 
 fun main() {
-    DayXX().run()
+    Day15().run()
 }
 
-class DayXX : Day() {
+class Day15 : Day() {
     override fun solve1(lines: List<String>) {
         TODO("Not yet implemented")
     }
