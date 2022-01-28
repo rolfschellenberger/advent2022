@@ -42,6 +42,14 @@ class MathTest {
     }
 
     @Test
+    fun testLastDigit() {
+        assertEquals(3, (-232213).lastDigit())
+        assertEquals(3, (6663).lastDigit())
+        assertEquals(5, (6665L).lastDigit())
+        assertEquals(5, (-1235L).lastDigit())
+    }
+
+    @Test
     fun testGreatestCommonDivisor() {
         assertEquals(3, greatestCommonDivisor(6, 9))
         assertEquals(6, greatestCommonDivisor(366, 60))
