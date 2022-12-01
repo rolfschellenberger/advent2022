@@ -3,7 +3,7 @@ package com.rolf.util
 import java.util.regex.Pattern
 
 fun readLines(fileName: String): List<String> {
-    return object {}.javaClass.getResource(fileName).readText().split("\n")
+    return {}.javaClass.getResource(fileName)?.readText()?.split("\n") ?: throw Exception("File '$fileName' was not found")
 }
 
 fun splitLine(line: String, delimiter: String = "", pattern: Pattern? = null, chunkSize: Int = 1): List<String> {
@@ -30,9 +30,9 @@ private fun splitLine(line: String, pattern: Pattern): List<String> {
 
 fun splitLines(
     lines: List<String>,
-    delimiter: String = "",
-    pattern: Pattern? = null,
-    chunkSize: Int = 1
+    delimiter: String = "", // Split by a delimiter
+    pattern: Pattern? = null, // Or split by a pattern (regex)
+    chunkSize: Int = 1 // Or split by a fixed length
 ): List<List<String>> {
     return lines.map { splitLine(it, delimiter, pattern, chunkSize) }
 }
