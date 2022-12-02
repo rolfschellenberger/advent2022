@@ -13,6 +13,14 @@ enum class HandShape(val score: Int) {
         return Outcome.LOST
     }
 
+    fun playTo(outcome: Outcome): HandShape {
+        return when (outcome) {
+            Outcome.DRAW -> this
+            Outcome.LOST -> HandShape.from(((score + 1) % 3) + 1)
+            Outcome.WIN -> HandShape.from((score % 3) + 1)
+        }
+    }
+
     companion object {
         fun from(value: String): HandShape {
             return when (value) {

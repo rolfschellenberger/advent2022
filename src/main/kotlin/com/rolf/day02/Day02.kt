@@ -25,17 +25,9 @@ class Day02 : Day() {
                 val (opponent, outcome) = it.take(2)
                 val opponentHandShape = HandShape.from(opponent)
                 val expectedOutcome = Outcome.from(outcome)
-                val myHandShape = whatToPlay(opponentHandShape, expectedOutcome)
+                val myHandShape = opponentHandShape.playTo(expectedOutcome)
                 myHandShape.score + expectedOutcome.score
             }
         )
-    }
-
-    private fun whatToPlay(opponentHandShape: HandShape, expectedOutcome: Outcome): HandShape {
-        return when (expectedOutcome) {
-            Outcome.DRAW -> opponentHandShape
-            Outcome.LOST -> HandShape.from(((opponentHandShape.score + 1) % 3) + 1)
-            Outcome.WIN -> HandShape.from((opponentHandShape.score % 3) + 1)
-        }
     }
 }
