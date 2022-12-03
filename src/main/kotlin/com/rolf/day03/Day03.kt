@@ -36,6 +36,8 @@ class Day03 : Day() {
     }
 
     private fun priority(char: Char): Int {
-        return if (char.code < 97) char.code - 64 + 26 else char.code - 96
+        // Lowercase item types `a` through `z` have priorities 1 through 26.
+        // Uppercase item types `A` through `Z` have priorities 27 through 52.
+        return if (char.code >= 97) char.code - 96 else char.code - 64 + 26
     }
 }
