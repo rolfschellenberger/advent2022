@@ -1,7 +1,5 @@
 package com.rolf.util
 
-import java.util.*
-import kotlin.collections.ArrayDeque
 import kotlin.math.absoluteValue
 
 fun IntArray.swap(a: Int, b: Int): IntArray {
@@ -46,11 +44,16 @@ fun CharArray.pushRight(steps: Int): CharArray {
     return this
 }
 
+fun IntRange.size(): Int {
+    return this.last - this.first + 1
+}
+
 fun <T> ArrayDeque<T>.shift(n: Int) {
     when {
         n < 0 -> repeat(n.absoluteValue) {
             addLast(removeFirst())
         }
+
         else -> repeat(n) {
             addFirst(removeLast())
         }
@@ -109,7 +112,7 @@ fun <T> getPermutations(options: List<T>, onNextPermutation: (List<T>) -> Unit, 
 
 /**
  * options: [a, b, c]
- * return: [[a, b, c], [a, b], [a, c], [a], [b, c], [b], [c]]
+ * return: ```[[a, b, c], [a, b], [a, c], [a], [b, c], [b], [c]]```
  */
 fun <T> getCombinations(options: List<T>, cache: MutableMap<String, List<List<T>>> = mutableMapOf()): List<List<T>> {
     if (options.isEmpty()) {
