@@ -1,7 +1,8 @@
 package com.rolf.day04
 
 import com.rolf.Day
-import com.rolf.util.size
+import com.rolf.util.contains
+import com.rolf.util.overlap
 import com.rolf.util.splitLine
 import java.util.regex.Pattern
 
@@ -30,12 +31,10 @@ class Day04 : Day() {
     }
 
     private fun hasFullOverlap(it: Pair<IntRange, IntRange>): Boolean {
-        val intersect = it.first.intersect(it.second)
-        return intersect.size == it.first.size() || intersect.size == it.second.size()
+        return it.first.contains(it.second) || it.second.contains(it.first)
     }
 
     private fun hasSomeOverlap(it: Pair<IntRange, IntRange>): Boolean {
-        val intersect = it.first.intersect(it.second)
-        return intersect.isNotEmpty()
+        return it.first.overlap(it.second) != null
     }
 }

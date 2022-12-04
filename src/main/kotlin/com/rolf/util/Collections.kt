@@ -1,6 +1,8 @@
 package com.rolf.util
 
 import kotlin.math.absoluteValue
+import kotlin.math.max
+import kotlin.math.min
 
 fun IntArray.swap(a: Int, b: Int): IntArray {
     val tmp = this[a]
@@ -46,6 +48,19 @@ fun CharArray.pushRight(steps: Int): CharArray {
 
 fun IntRange.size(): Int {
     return this.last - this.first + 1
+}
+
+fun IntRange.hasOverlap(other: IntRange): Boolean {
+    return !(other.first > last || other.last < first)
+}
+
+fun IntRange.overlap(other: IntRange): IntRange? {
+    if (!hasOverlap(other)) return null
+    return max(first, other.first)..min(last, other.last)
+}
+
+fun IntRange.contains(other: IntRange): Boolean {
+    return other.first >= first && other.last <= last
 }
 
 fun <T> ArrayDeque<T>.shift(n: Int) {

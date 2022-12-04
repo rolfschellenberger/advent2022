@@ -193,6 +193,34 @@ class CollectionsTest {
     }
 
     @Test
+    fun testIntRangeSize() {
+        assertEquals(3, (3..5).size())
+        assertEquals(3, (5 until 8).size())
+        assertEquals(1, (10..10).size())
+    }
+
+    @Test
+    fun testIntRangeOverlap() {
+        assertEquals(5..8, (1..8).overlap(5..10))
+        assertEquals(5..8, (5..10).overlap(1..8))
+        assertEquals(5..5, (1..5).overlap(5..10))
+        assertEquals(5..8, (1..15).overlap(5..8))
+        assertEquals(5..8, (5..8).overlap(1..15))
+        assertNull((5..8).overlap(9..15))
+    }
+
+    @Test
+    fun testIntRangeContains() {
+        assertTrue((1..6).contains(1..3))
+        assertTrue((1..6).contains(2..6))
+        assertTrue((1..6).contains(3..3))
+        assertFalse((3..6).contains(1..2))
+        assertFalse((3..6).contains(1..4))
+        assertFalse((3..6).contains(5..8))
+        assertFalse((3..6).contains(7..8))
+    }
+
+    @Test
     fun testDeQueueShift() {
         val dequeue = ArrayDeque(listOf(1, 2, 3, 4, 5))
         dequeue.shift(-1)
