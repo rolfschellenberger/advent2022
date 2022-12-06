@@ -16,7 +16,7 @@ class Day06 : Day() {
     }
 
     private fun getFirstUniqueSequencePositionOfLength(input: String, length: Int): Int {
-        for (i in length until input.length) {
+        for (i in length..input.length) {
             val seq = input.subSequence(i - length, i)
             if (seq.toSet().size == length) {
                 return i
