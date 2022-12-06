@@ -8,10 +8,20 @@ fun main() {
 
 class Day06 : Day() {
     override fun solve1(lines: List<String>) {
-        TODO("Not yet implemented")
+        println(getFirstUniqueSequencePositionOfLength(lines.first(), 4))
     }
 
     override fun solve2(lines: List<String>) {
-        TODO("Not yet implemented")
+        println(getFirstUniqueSequencePositionOfLength(lines.first(), 14))
+    }
+
+    private fun getFirstUniqueSequencePositionOfLength(input: String, length: Int): Int {
+        for (i in length until input.length) {
+            val seq = input.subSequence(i - length, i)
+            if (seq.toSet().size == length) {
+                return i
+            }
+        }
+        return -1
     }
 }
