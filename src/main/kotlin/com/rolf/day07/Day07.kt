@@ -56,7 +56,7 @@ class Day07 : Day() {
 
                 line.startsWith("$").not() -> {
                     val (size, file) = line.split(" ")
-                    pointer.files.add(File(size.toLong(), file))
+                    pointer.files.add(File(file, size.toLong()))
                 }
             }
         }
@@ -99,4 +99,4 @@ data class Directory(val name: String, val parent: Directory?) {
     }
 }
 
-data class File(val size: Long, val name: String)
+data class File(val name: String, val size: Long)
