@@ -21,6 +21,10 @@ data class Point(val x: Int, val y: Int) : Comparable<Point> {
         return abs(x - other.x) + abs(y - other.y)
     }
 
+    fun touching(other: Point): Boolean {
+        return abs(x - other.x) <= 1 && abs(y - other.y) <= 1
+    }
+
     override fun compareTo(other: Point): Int {
         val yCompare = y.compareTo(other.y)
         if (yCompare != 0) return yCompare
