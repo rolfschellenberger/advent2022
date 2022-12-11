@@ -2,6 +2,7 @@ package com.rolf.day11
 
 import com.rolf.Day
 import com.rolf.util.groupLines
+import com.rolf.util.leastCommonMultiple
 import kotlin.math.floor
 
 
@@ -29,11 +30,7 @@ class Day11 : Day() {
     private fun initialize(lines: List<String>) {
         monkeys.clear()
         monkeys.addAll(groupLines(lines, "").map { parse(it) })
-
-        mod = 1L
-        for (monkey in monkeys) {
-            mod *= monkey.modValue
-        }
+        mod = leastCommonMultiple(monkeys.map { it.modValue.toLong() })
     }
 
     private fun parse(lines: List<String>): Monkey {

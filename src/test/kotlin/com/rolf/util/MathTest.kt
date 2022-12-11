@@ -63,4 +63,11 @@ class MathTest {
         assertEquals(273, leastCommonMultiple(13, 21))
         assertEquals(360, leastCommonMultiple(120, 90))
     }
+
+    @Test
+    fun testLeastCommonMultipleList() {
+        assertEquals(360, leastCommonMultiple(listOf(120, 90)))
+        assertEquals(903000, leastCommonMultiple(listOf(12, 15, 75, 4, 5, 100, 200, 250, 301)))
+        assertEquals(2520, leastCommonMultiple(listOf(1, 2, 3, 4, 5, 6, 7, 8, 9)))
+    }
 }

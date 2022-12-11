@@ -41,3 +41,12 @@ fun greatestCommonDivisor(a: Long, b: Long): Long {
 fun leastCommonMultiple(a: Long, b: Long): Long {
     return (a * b) / greatestCommonDivisor(a, b)
 }
+
+fun leastCommonMultiple(numbers: List<Long>): Long {
+    var result = numbers.first()
+    for (i in 1 until numbers.size) {
+        result = leastCommonMultiple(result, numbers[i])
+    }
+    return result
+}
+
