@@ -321,30 +321,33 @@ open class Matrix<T>(internal val input: MutableList<MutableList<T>>) {
         from: Point,
         to: Point,
         notAllowedLocations: Set<Point> = emptySet(),
-        diagonal: Boolean = false
+        diagonal: Boolean = false,
+        customAllowedFunction: (grid: Matrix<T>, from: Point, to: Point) -> Boolean = { _, _, _ -> true }
     ): List<Point> {
-        return findPath(from, setOf(to), notAllowedLocations, diagonal)
+        return findPath(from, setOf(to), notAllowedLocations, diagonal, customAllowedFunction)
     }
 
     fun findPath(
         from: Point,
         to: Set<Point>,
         notAllowedLocations: Set<Point> = emptySet(),
-        diagonal: Boolean = false
+        diagonal: Boolean = false,
+        customAllowedFunction: (grid: Matrix<T>, from: Point, to: Point) -> Boolean = { _, _, _ -> true }
     ): List<Point> {
         val paths: ArrayDeque<List<Point>> = ArrayDeque()
         val seen: MutableSet<Point> = mutableSetOf(from)
         seen.addAll(notAllowedLocations)
 
         // Function to filter allowed locations
-        fun isAllowed(point: Point): Boolean {
-            if (seen.contains(point)) return false
-            if (notAllowedLocations.contains(point)) return false
+        fun isAllowed(from: Point, to: Point): Boolean {
+            if (seen.contains(to)) return false
+            if (notAllowedLocations.contains(to)) return false
+            if (!customAllowedFunction(this, from, to)) return false
             return true
         }
 
         fun getNeighbours(point: Point): List<Point> {
-            return getNeighbours(point, diagonal = diagonal).filter { isAllowed(it) }.sorted()
+            return getNeighbours(point, diagonal = diagonal).filter { isAllowed(point, it) }.sorted()
         }
 
         // Start with the neighbours of the starting point that are allowed to visit.
