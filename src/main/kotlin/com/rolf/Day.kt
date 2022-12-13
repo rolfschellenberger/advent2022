@@ -16,9 +16,16 @@ abstract class Day {
         println("+--------+")
 
         println("-- Part 1 --")
+        val s1 = System.currentTimeMillis()
         solve1(readLines("/$day.txt"))
+        println("-- ${System.currentTimeMillis() - s1}ms --")
+
+        println()
+
         println("-- Part 2 --")
+        val s2 = System.currentTimeMillis()
         solve2(readLines("/$day.txt"))
+        println("-- ${System.currentTimeMillis() - s2}ms --")
     }
 
     abstract fun solve1(lines: List<String>)
