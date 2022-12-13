@@ -1,8 +1,8 @@
 package com.rolf.util
 
+import jakarta.xml.bind.DatatypeConverter
 import java.security.MessageDigest
 import java.util.*
-import javax.xml.bind.DatatypeConverter
 
 private val MD5 = MessageDigest.getInstance("MD5")
 
