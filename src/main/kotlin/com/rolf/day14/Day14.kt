@@ -11,7 +11,7 @@ fun main() {
 
 class Day14 : Day() {
     override fun solve1(lines: List<String>) {
-        val grid = MatrixString.buildDefault(530, 200, ".")
+        val grid = MatrixString.buildDefault(1000, 200, ".")
         for (line in lines) {
             val points = parse(line)
 //            println(points)
@@ -23,11 +23,18 @@ class Day14 : Day() {
         }
 //        println(grid.find("#").maxOf { it.x })
 //        println(grid.find("#").maxOf { it.y })
+        val floorY = grid.find("#").maxOf { it.y } + 2
+        for (x in 0 until grid.width()) {
+            grid.set(x, floorY, "#")
+        }
 //        println(grid)
 
         simulateSand(grid, Point(500, 0))
 //        println(grid)
-        println(grid.find("o").size - 1)
+        println(grid.find("o").size)
+
+        // 24080
+        // 26358
     }
 
     private fun simulateSand(grid: MatrixString, start: Point) {
@@ -37,6 +44,9 @@ class Day14 : Day() {
         var stopPoint = start
         while (stopPoint.y <= lowestPoint) {
             stopPoint = dropSand(grid, start)
+            if (stopPoint == start) {
+                break
+            }
         }
     }
 
