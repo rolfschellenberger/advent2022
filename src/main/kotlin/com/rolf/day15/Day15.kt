@@ -9,6 +9,7 @@ fun main() {
 
 class Day15 : Day() {
     override fun solve1(lines: List<String>) {
+        if(true) return
         val sensorsWithBeacons = lines.map { parse(it) }
         sensorsWithBeacons.forEach { println(it) }
         val sensorsAndBeacons = sensorsWithBeacons.map {
@@ -67,7 +68,31 @@ class Day15 : Day() {
     }
 
     override fun solve2(lines: List<String>) {
+        val sensorsWithBeacons = lines.map { parse(it) }
+        sensorsWithBeacons.forEach { println(it) }
+        val sensorsAndBeacons = sensorsWithBeacons.map {
+            listOf(it.sensor, it.beacon)
+        }.flatten()
+        val beacons = sensorsWithBeacons.map { it.beacon }.toSet()
+
+        // the distress beacon must have x and y coordinates each no lower than 0 and no larger than 4000000.
+        // Build up set of all points in this area
+        // Take every sensor in this area
+        // Remove all points that cannot have a beacon from this sensor cannotHaveBeacon(sensor)
+        // What is left should be the location
+
     }
+
+//    private fun canContainBeacon(point:Point) {
+//        var canBeBeacon = true
+//        for (sensorWithBeacon in sensorsWithBeacons) {
+//            val distance = point.distance(sensorWithBeacon.sensor)
+//            if (distance <= sensorWithBeacon.distance) {
+//                canBeBeacon = false
+//                break
+//            }
+//        }
+//    }
 }
 
 data class Sensor(val sensor: Point, val beacon: Point) {
