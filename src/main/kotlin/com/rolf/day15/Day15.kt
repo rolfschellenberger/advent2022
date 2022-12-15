@@ -97,5 +97,4 @@ class IntRangeComparator : Comparator<IntRange> {
     override fun compare(o1: IntRange, o2: IntRange): Int {
         return o1.first.compareTo(o2.first)
     }
-
 }
