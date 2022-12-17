@@ -52,7 +52,7 @@ class Day16 : Day() {
 //        println(execute(graph, listOf("AA"), listOf("AA"), 0, toOpen, emptySet()))
 
         // 1913 too low
-        // 2087
+        // 2087 
 
 //        val paths = visitPaths(graph)
 //        paths.forEach {
