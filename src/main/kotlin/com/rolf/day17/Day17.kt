@@ -14,7 +14,6 @@ class Day17 : Day() {
 
     private var rockPointer = 0
     private val rocks: List<Rock>
-    private var count = 0
 
     init {
         rocks = createRocks()
@@ -26,45 +25,11 @@ class Day17 : Day() {
 
     override fun solve1(lines: List<String>) {
         val moves = splitLine(lines.first()).map { it.first() }.toCharArray()
-        val grid = MatrixString.buildDefault(7, 7000, ".")
+        val grid = MatrixString.buildDefault(7, 4000, ".")
 
-        // 2783 is the repeating pattern
-        // It starts after the first 452 lines
-        // So look for the rock that leads up the 452 lines
-        // Look for the rock that leads up to the 3235 lines (452 + 2783)
-        // When you know the rock counts, we know the pattern + the offset, so we can skip to the closes
-        // below 1000000000000 and run the simulation
-        // (1000000000000 - rocks to go up to 452) % 2783 = additional runs to do
-        var startGrid = grid.copy()
-        for (i in 0 until 275+735) { //275+(0*1745)) {
+        for (i in 0 until 2022) {
             dropRock(grid, moves)
-//            if (gridHeight(grid) == 3235) {
-//                startGrid = grid.copy()
-//            }
-//            if (gridHeight(grid) > 3235) {
-//                println(i+1)
-//                break
-//            }
         }
-//        printGrid(startGrid)
-//        println(gridHeight(startGrid))
-        // 275 rocks were dropped to get to the starting point of the pattern
-        // 2020 rocks were dropped to get to the end point of the pattern
-        // So every (2020-275=1745) rocks, an additional 2783 height will be added
-        // 275 = 452 high
-        // 2020 = 3235 high
-        // 3765 = 6018 high
-        // (1000000000000 - 275) / 1745 = number of times 2783 height
-        // (1000000000000 - 275) % 1745 = number of additional runs to do on top of the 275
-        println((1000000000000L - 275L) / 1745L) // = 573065902
-        println((1000000000000L - 275L) % 1745L) // = 735
-        // Height of 275 + 735 rocks = 1616, this is 1616-452=1164 more height by the last bit
-        // So we have 452 + (573065902 * 2783) + 1164 =
-        println(452L + (573065902L * 2783L) + 1164L)
-
-        // 735
-
-//        printGrid(grid)
         println(gridHeight(grid))
     }
 
@@ -74,12 +39,8 @@ class Day17 : Day() {
         val rockToPlace = nextRock()
         val rock = rockToPlace.moveRight(2).moveUp(highestY + 1 + 3)
 
-//        println("Dropping ${rock.name}")
-//        printGrid(grid, rock)
-
         // Repeat until y < 0:
         var previousRock = rock
-        count = 0 // FIXME: remove
         while (true) {
             //  Push
             val move = moves.first()
@@ -112,7 +73,6 @@ class Day17 : Day() {
         for (point in previousRock.points) {
             grid.set(point, "#")
         }
-//        printGrid(grid)
     }
 
     private fun isPossible(grid: MatrixString, rock: Rock): Boolean {
@@ -132,24 +92,6 @@ class Day17 : Day() {
             if (grid.get(point) == "#") return true
         }
         return false
-//        count++
-//        return count > 10
-    }
-
-    private fun printGrid(grid: MatrixString) {
-        val copy = grid.copy()
-        copy.flip(false)
-        println(copy)
-    }
-
-    private fun printGrid(grid: MatrixString, rock: Rock) {
-        val copy = grid.copy()
-        rock.points.forEach {
-            copy.set(it, "@")
-        }
-        copy.flip(false)
-        println(copy)
-        println()
     }
 
     private fun createRocks(): List<Rock> {
@@ -207,12 +149,30 @@ class Day17 : Day() {
     }
 
     override fun solve2(lines: List<String>) {
+        // When dropping 4000 rocks, I inspect the grid output
+        // There is a pattern of 2783 lines
+        // It starts after the first 452 lines
+        val beforeRepetitionLineHeight = 452L
+        // So look for the rock that leads up the 452 lines: 275 rocks
+        val beforeRepetitionRocks = 275L
+        // Look for the rock that leads up to the 3235 lines (452 + 2783): 2020 rocks
+        // So every (2020-275=1745) rocks, an additional 2783 height will be added
+        val repetitionRocks = 2020 - beforeRepetitionRocks
+        val repetitionLineHeight = 2783L
+
+        // (1000000000000 - 275) / 1745 = number of times 2783 height
+        // (1000000000000 - 275) % 1745 = number of additional runs to do on top of the 275
+        val rockDropCount = 1000000000000L
+        val repetitionCount = (rockDropCount - beforeRepetitionRocks) / repetitionRocks // = 573065902
+//        val afterRepetitionsLineHeight = (rockDropCount - beforeRepetitionRocks) % repetitionRocks // = 735
+
+        // Height of 275 rocks + 735 lines = 1616 lines, this is 1616-452=1164 more height by the last bit
+        // So we have 452 + (573065902 * 2783) + 1164 =
+        println(beforeRepetitionLineHeight + (repetitionCount * repetitionLineHeight) + 1164L)
     }
 }
 
 data class Rock(val name: String, val points: List<Point>) {
-    val height: Int = points.maxOfOrNull { it.y } ?: 0
-
     fun moveRight(i: Int): Rock {
         return Rock(name, points.map {
             Point(it.x + i, it.y)
