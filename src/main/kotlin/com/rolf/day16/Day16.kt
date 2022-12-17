@@ -46,7 +46,7 @@ class Day16 : Day() {
             val left = combinationCache.getValue(combination.toSet())
             val right = combinationCache.getValue(other)
             val sum = left + right
-            println("$combination and $other: $left + $right = $sum")
+//            println("$combination and $other: $left + $right = $sum")
             maxScore = maxOf(maxScore, sum)
         }
         println(maxScore)
@@ -113,9 +113,6 @@ class Day16 : Day() {
                 maxScore,
                 open(graph, o, time + openTime + travelTime, toOpen - o, open + location, maxTime, score + openScore)
             )
-        }
-        if (cache.containsKey(key) && cache.getValue(key) != maxScore) {
-            println("${cache.getValue(key)} != $maxScore")
         }
         cache[key] = maxScore - score
         return maxScore
