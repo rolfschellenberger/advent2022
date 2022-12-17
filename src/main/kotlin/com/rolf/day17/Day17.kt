@@ -20,15 +20,52 @@ class Day17 : Day() {
         rocks = createRocks()
     }
 
+    private fun gridHeight(grid: MatrixString): Int {
+        return grid.find("#").maxOf { it.y } + 1
+    }
+
     override fun solve1(lines: List<String>) {
         val moves = splitLine(lines.first()).map { it.first() }.toCharArray()
-        val grid = MatrixString.buildDefault(7, 10000, ".")
+        val grid = MatrixString.buildDefault(7, 7000, ".")
 
-        for (i in 0 until 2022) {
+        // 2783 is the repeating pattern
+        // It starts after the first 452 lines
+        // So look for the rock that leads up the 452 lines
+        // Look for the rock that leads up to the 3235 lines (452 + 2783)
+        // When you know the rock counts, we know the pattern + the offset, so we can skip to the closes
+        // below 1000000000000 and run the simulation
+        // (1000000000000 - rocks to go up to 452) % 2783 = additional runs to do
+        var startGrid = grid.copy()
+        for (i in 0 until 275+735) { //275+(0*1745)) {
             dropRock(grid, moves)
+//            if (gridHeight(grid) == 3235) {
+//                startGrid = grid.copy()
+//            }
+//            if (gridHeight(grid) > 3235) {
+//                println(i+1)
+//                break
+//            }
         }
+//        printGrid(startGrid)
+//        println(gridHeight(startGrid))
+        // 275 rocks were dropped to get to the starting point of the pattern
+        // 2020 rocks were dropped to get to the end point of the pattern
+        // So every (2020-275=1745) rocks, an additional 2783 height will be added
+        // 275 = 452 high
+        // 2020 = 3235 high
+        // 3765 = 6018 high
+        // (1000000000000 - 275) / 1745 = number of times 2783 height
+        // (1000000000000 - 275) % 1745 = number of additional runs to do on top of the 275
+        println((1000000000000L - 275L) / 1745L) // = 573065902
+        println((1000000000000L - 275L) % 1745L) // = 735
+        // Height of 275 + 735 rocks = 1616, this is 1616-452=1164 more height by the last bit
+        // So we have 452 + (573065902 * 2783) + 1164 =
+        println(452L + (573065902L * 2783L) + 1164L)
+
+        // 735
+
 //        printGrid(grid)
-        println(grid.find("#").maxOf { it.y } + 1)
+        println(gridHeight(grid))
     }
 
     private fun dropRock(grid: MatrixString, moves: CharArray) {
