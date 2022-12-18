@@ -32,6 +32,62 @@ open class Location(val x: Int, val y: Int, val z: Int) : Comparable<Location> {
         return 0L + abs(x - other.x) + abs(y - other.y) + abs(z - other.z)
     }
 
+    fun getNeighbours(): List<Location> {
+        return listOf(
+            Location(x + 1, y, z),
+            Location(x - 1, y, z),
+            Location(x, y + 1, z),
+            Location(x, y - 1, z),
+            Location(x, y, z + 1),
+            Location(x, y, z - 1)
+        )
+    }
+
+    fun findPath(
+        to: Location,
+        notAllowedLocations: Set<Location> = emptySet()
+    ): List<Location> {
+        val paths: ArrayDeque<List<Location>> = ArrayDeque()
+        val seen: MutableSet<Location> = mutableSetOf(this)
+        seen.addAll(notAllowedLocations)
+
+        // Function to filter allowed locations
+        fun isAllowed(to: Location): Boolean {
+            if (seen.contains(to)) return false
+            if (notAllowedLocations.contains(to)) return false
+            return true
+        }
+
+        fun getNeighbours(point: Location): List<Location> {
+            return point.getNeighbours().filter { isAllowed(it) }.sorted()
+        }
+
+        // Start with the neighbours of the starting point that are allowed to visit.
+        for (neighbour in getNeighbours(this)) {
+            paths.add(listOf(neighbour))
+        }
+
+        while (paths.isNotEmpty()) {
+            val path = paths.removeFirst()
+            val pathEnd: Location = path.last()
+
+            // Arrived at destination?
+            if (to == pathEnd) {
+                return path
+            }
+
+            // Continue only new locations
+            if (pathEnd !in seen) {
+                seen.add(pathEnd)
+
+                for (neighbour in getNeighbours(pathEnd)) {
+                    paths.add(path + neighbour)
+                }
+            }
+        }
+        return emptyList()
+    }
+
     override fun compareTo(other: Location): Int {
         val xCompare = x.compareTo(other.x)
         if (xCompare != 0) return xCompare
