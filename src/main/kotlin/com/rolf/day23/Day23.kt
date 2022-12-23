@@ -79,7 +79,7 @@ class Day23 : Day() {
     private fun newPosition(elves: Set<Point>, elf: Point, moves: List<Direction>): Point {
         val neighbours = getNeighbours(elf)
         // When there are no elves around the elf, don't move.
-        if (elves.intersect(neighbours).isEmpty()) {
+        if (neighbours.none { elves.contains(it) }) {
             return elf
         }
 
