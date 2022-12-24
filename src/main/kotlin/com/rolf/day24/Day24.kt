@@ -1,10 +1,8 @@
 package com.rolf.day24
 
 import com.rolf.Day
+import com.rolf.util.*
 import com.rolf.util.Direction
-import com.rolf.util.MatrixString
-import com.rolf.util.Point
-import com.rolf.util.splitLines
 
 fun main() {
     Day24().run()
@@ -16,59 +14,92 @@ class Day24 : Day() {
         val topLeft = Point(1, 1)
         val bottomRight = Point(grid.width() - 2, grid.height() - 2)
         grid.cutOut(topLeft, bottomRight)
-        val start = grid.topLeft()
-        val end = grid.bottomRight()
-//        val blizzards = grid.allPoints()
-//            .map { grid.get(it) to it }
-//            .filter { it.first != "." }
-//            .toMap()
-
-
-
-        var blizzards = grid.allPoints()
-            .map { it to grid.get(it) }
-            .map { it.first to getDirection(it.second) }
-        grid.replace(
-            mapOf(
-                "<" to ".",
-                ">" to ".",
-                "^" to ".",
-                "v" to ".",
-            )
+        val blizzards = grid.allPoints()
+            .map { grid.get(it) to it }
+            .filter { it.first != "." }
+            .groupBy { it.first }
+            .map { (key, value) -> key to value.map { it.second }.toSet() }
+            .toMap()
+        println(blizzards)
+        val directions = listOf(
+            Direction("<", -1, 0),
+            Direction(">", 1, 0),
+            Direction("^", 0, -1),
+            Direction("v", 0, 1)
         )
-        printGrid(grid, blizzards)
 
-        // Move blizzards once to create a starting location on (0, 0)
-        blizzards = move(grid, blizzards)
+        val startLocation = Point(0, -1)
+        val endLocation = Point(grid.width() - 1, grid.height())
+        val startState = State(0, startLocation)
+        val queue = ArrayDeque<State>()
+        queue.add(startState)
+
+        // Keep track of seen states, to stop when we end up in loops
+        val seen = mutableSetOf<State>()
+        val lcm = leastCommonMultiple(grid.width().toLong(), grid.height().toLong()).toInt()
+
+        while (queue.isNotEmpty()) {
+            val state = queue.removeFirst()
+            val newTime = state.time + 1
+
+            val neighbours = grid.getNeighbours(state.location, diagonal = false, includeOwn = true)
+            for (neighbour in neighbours) {
+                println(neighbour)
+                if (neighbour == endLocation) {
+                    println(newTime)
+                    return
+                }
+
+                // Check if none blizzard (in any wind direction) ends up on this location after 'time' steps.
+                var isPossibleMove = true
+                for (direction in directions) {
+                    val blizzardLocations = blizzards.getValue(direction.direction)
+                    val x = ((neighbour.x - direction.xDelta) * newTime) % grid.width()
+                    val y = ((neighbour.y - direction.yDelta) * newTime) % grid.height()
+                    if (blizzardLocations.contains(Point(x, y))) {
+                        isPossibleMove = false
+                        break
+                    }
+                }
+
+                // When a move is possible, add this state to the queue
+                if (isPossibleMove) {
+                    // To make sure we don't end up on a repetitive state, we keep track of the states
+                    val key = State(newTime % lcm, neighbour)
+                    if (seen.add(key)) {
+                        queue.add(State(newTime, neighbour))
+                    } else {
+                        println("double")
+                    }
+                }
+            }
+        }
+
+//
+//
+//        var blizzards = grid.allPoints()
+//            .map { it to grid.get(it) }
+//            .map { it.first to getDirection(it.second) }
+//        grid.replace(
+//            mapOf(
+//                "<" to ".",
+//                ">" to ".",
+//                "^" to ".",
+//                "v" to ".",
+//            )
+//        )
 //        printGrid(grid, blizzards)
-        if (grid.get(grid.topLeft()) != ".") throw Exception("Invalid start state")
-//        println("------------------------")
-
-        // First build the simulation
-        val time = findPath(grid, blizzards, start, end)
-        println(time + 1)
-
-//        for (i in 0 until 4) {
-//            location
-//            if (location == end) {
-//                break
-//            }
 //
-//            // Draw grid
-//            val state = buildGrid(grid, blizzards)
-//            println("location: $location")
-//            println(state)
-//            // Can we move?
-//            val neighbours = state.getNeighbours(location, diagonal = false)
-//                .filter { state.get(it) == "." }
-//            for (neighbour in neighbours) {
-//                println(neighbour)
-//            }
+//        // Move blizzards once to create a starting location on (0, 0)
+//        blizzards = move(grid, blizzards)
+////        printGrid(grid, blizzards)
+//        if (grid.get(grid.topLeft()) != ".") throw Exception("Invalid start state")
+////        println("------------------------")
 //
-//            // Move blizzards
-//            blizzards = move(grid, blizzards)
-//            println()
-//        }
+//        // First build the simulation
+//        val time = findPath(grid, blizzards, start, end)
+//        println(time + 1)
+
     }
 
     private fun findPath(
@@ -191,5 +222,13 @@ class Day24 : Day() {
     }
 
     override fun solve2(lines: List<String>) {
+    }
+}
+
+data class State(val time: Int, val location: Point)
+
+data class Direction(val direction: String, val xDelta: Int, val yDelta: Int) {
+    fun newPoint(point: Point): Point {
+        return Point(point.x + xDelta, point.y + yDelta)
     }
 }
