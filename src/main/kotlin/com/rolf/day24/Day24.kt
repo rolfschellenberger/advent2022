@@ -11,28 +11,59 @@ fun main() {
 }
 
 class Day24 : Day() {
+
+    private val directions = listOf(
+        Direction("<", -1, 0),
+        Direction(">", 1, 0),
+        Direction("^", 0, -1),
+        Direction("v", 0, 1)
+    )
+
     override fun solve1(lines: List<String>) {
+        val grid = parseGrid(lines)
+        val blizzards = findBlizzards(grid)
+
+        val startLocation = Point(0, -1)
+        val endLocation = grid.bottomRight()
+        println(getTime(grid, blizzards, startLocation, endLocation))
+    }
+
+    override fun solve2(lines: List<String>) {
+        val grid = parseGrid(lines)
+        val blizzards = findBlizzards(grid)
+
+        val time1 = getTime(grid, blizzards, Point(0, -1), grid.bottomRight())
+        val time2 = getTime(grid, blizzards, Point(grid.width() - 1, grid.height()), grid.topLeft(), time = time1)
+        println(
+            getTime(grid, blizzards, Point(0, -1), grid.bottomRight(), time = time2)
+        )
+    }
+
+    private fun parseGrid(lines: List<String>): MatrixString {
         val grid = MatrixString.build(splitLines(lines))
         val topLeft = Point(1, 1)
         val bottomRight = Point(grid.width() - 2, grid.height() - 2)
         grid.cutOut(topLeft, bottomRight)
+        return grid
+    }
 
-        val blizzards = grid.allPoints()
+    private fun findBlizzards(grid: MatrixString): Map<String, List<Point>> {
+        return grid.allPoints()
             .map { grid.get(it) to it }
             .filter { it.first != "." }
             .groupBy { it.first }
             .map { (key, value) -> key to value.map { it.second } }
             .toMap()
-        val directions = listOf(
-            Direction("<", -1, 0),
-            Direction(">", 1, 0),
-            Direction("^", 0, -1),
-            Direction("v", 0, 1)
-        )
+    }
 
-        val startLocation = Point(0, -1)
-        val endLocation = grid.bottomRight()
-        val startState = State(0, startLocation)
+    private fun getTime(
+        grid: MatrixString,
+        blizzards: Map<String, List<Point>>,
+        startLocation: Point,
+        endLocation: Point,
+        time: Int = 0
+    ): Int {
+        val startState = State(time, startLocation)
         val queue = ArrayDeque<State>()
         queue.add(startState)
 
@@ -43,11 +74,10 @@ class Day24 : Day() {
         while (queue.isNotEmpty()) {
             val state = queue.removeFirst()
             val newTime = state.time + 1
-//            println("Minute: $newTime (${state.location.x}, ${state.location.y})")
 
+            // Found the destination?
             if (state.location == endLocation) {
-                println(newTime)
-                return
+                return newTime
             }
 
             val neighbours = grid.getNeighbours(state.location, diagonal = false) + state.location
@@ -67,7 +97,7 @@ class Day24 : Day() {
                 }
 
                 // When a move is possible, add this state to the queue
-                if (isPossibleMove) {
+                if (isPossibleMove || neighbour == startLocation) {
                     // To make sure we don't end up on a repetitive state, we keep track of the states
                     val key = State(newTime % lcm, neighbour)
                     if (seen.add(key)) {
@@ -76,9 +106,9 @@ class Day24 : Day() {
                 }
             }
         }
-    }
 
-    override fun solve2(lines: List<String>) {
+        // No route found
+        return -1
     }
 }
 
