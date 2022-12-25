@@ -32,11 +32,11 @@ class Day24 : Day() {
         val grid = parseGrid(lines)
         val blizzards = findBlizzards(grid)
 
-        val time1 = getTime(grid, blizzards, Point(0, -1), grid.bottomRight())
-        val time2 = getTime(grid, blizzards, Point(grid.width() - 1, grid.height()), grid.topLeft(), time = time1)
-        println(
-            getTime(grid, blizzards, Point(0, -1), grid.bottomRight(), time = time2)
-        )
+        var time = 0
+        time = getTime(grid, blizzards, Point(0, -1), grid.bottomRight(), time)
+        time = getTime(grid, blizzards, Point(grid.width() - 1, grid.height()), grid.topLeft(), time)
+        time = getTime(grid, blizzards, Point(0, -1), grid.bottomRight(), time)
+        println(time)
     }
 
     private fun parseGrid(lines: List<String>): MatrixString {
